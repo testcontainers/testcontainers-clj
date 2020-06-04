@@ -3,15 +3,16 @@
 
 (set-env! :resource-paths #{"resources" "src"}
           :source-paths   #{"test"}
-          :dependencies   '[[org.clojure/clojure "RELEASE"]
-                            [adzerk/boot-test "RELEASE" :scope "test"]])
+          :dependencies   '[[org.clojure/clojure "1.10.1"]
+                            [org.testcontainers/testcontainers "1.14.3"]
+                            [metosin/bat-test "0.4.4" :scope "test"]])
 
 (task-options!
  pom {:project     project
       :version     version
-      :description "FIXME: write description"
-      :url         "http://example/FIXME"
-      :scm         {:url "https://github.com/yourname/clj-test-containers"}
+      :description "A lightweight, unofficial wrapper around the Testcontainers Java library"
+      :url         "https://github.com/javahippie/clj-test-containers"
+      :scm         {:url "https://github.com/javahippie/clj-test-containers"}
       :license     {"Eclipse Public License"
                     "http://www.eclipse.org/legal/epl-v10.html"}})
 
@@ -20,4 +21,4 @@
   []
   (comp (pom) (jar) (install)))
 
-(require '[adzerk.boot-test :refer [test]])
+(require '[metosin.bat-test :refer (bat-test)])
