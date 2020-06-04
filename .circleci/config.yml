@@ -18,6 +18,10 @@ jobs:
     steps:
       - checkout
 
+      - run:
+          name: Install Boot
+          command: sudo bash -c "cd /usr/local/bin && curl -fsSLo boot https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh && chmod 755 boot"
+
       # Download and cache dependencies
       - restore_cache:
           keys:
