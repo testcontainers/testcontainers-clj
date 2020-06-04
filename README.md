@@ -1,5 +1,7 @@
 # clj-test-containers
 
+[![javahippie](https://circleci.com/gh/javahippie/clj-test-containers.svg?style=svg)](<LINK>)
+
 ## What it is
 This application is supposed to be a lightweight wrapper around the Testcontainers Java library. 
 
