@@ -14,3 +14,35 @@
       (is (some? (get (:mapped-ports initialized-container) 5432)))
       (is (nil? (:id stopped-container)))
       (is (nil? (:mapped-ports stopped-container))))))
+
+(deftest init-with-volume-test
+
+  (testing "Testing mapping of a classpath resource"
+    (let [container (create {:image-name "postgres:12.2"
+                             :exposed-ports [5432] 
+                             :env-vars {"POSTGRES_PASSWORD" "pw"}
+                             :volume {:classpath-resource-mapping {:resource-path "test.sql"
+                                                                   :container-path "/opt/test.sql"
+                                                                   :mode :read-only}}})
+          initialized-container (start container)
+          stopped-container (stop container)]
+      (is (some? (:id initialized-container)))
+      (is (some? (:mapped-ports initialized-container)))
+      (is (some? (get (:mapped-ports initialized-container) 5432)))
+      (is (nil? (:id stopped-container)))
+      (is (nil? (:mapped-ports stopped-container)))))
+
+  (testing "Testing mapping of a filesystem-binding"
+    (let [container (create {:image-name "postgres:12.2"
+                             :exposed-ports [5432] 
+                             :env-vars {"POSTGRES_PASSWORD" "pw"}
+                             :volume {:file-system-bind {:host-path "/tmp"
+                                                         :container-path "/opt"
+                                                         :mode :read-only}}})
+          initialized-container (start container)
+          stopped-container (stop container)]
+      (is (some? (:id initialized-container)))
+      (is (some? (:mapped-ports initialized-container)))
+      (is (some? (get (:mapped-ports initialized-container) 5432)))
+      (is (nil? (:id stopped-container)))
+      (is (nil? (:mapped-ports stopped-container))))))
