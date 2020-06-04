@@ -8,9 +8,9 @@
                              :exposed-ports [5432] 
                              :env-vars {"POSTGRES_PASSWORD" "pw"}})
           initialized-container (start container)
-          container-id (:id initialized-container)
-          mapped-ports (:mapped-ports initialized-container)]
-      (is (some? container-id))
-      (is (some? mapped-ports))
-      (is (some? (get mapped-ports 5432)))
-      (stop container))))
+          stopped-container (stop container)]
+      (is (some? (:id initialized-container)))
+      (is (some? (:mapped-ports initialized-container)))
+      (is (some? (get (:mapped-ports initialized-container) 5432)))
+      (is (nil? (:id stopped-container)))
+      (is (nil? (:mapped-ports stopped-container))))))

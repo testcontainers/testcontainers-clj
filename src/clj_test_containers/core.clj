@@ -3,7 +3,6 @@
 (defn create
   "Sets the properties for a testcontainer instance"
   [{image-name :image-name
-
     exposed-ports :exposed-ports
     env-vars :env-vars
     command :command}]
@@ -35,5 +34,8 @@
 
 (defn stop 
   "Stops the underlying container"
-  [{container :container}]
-  (.stop container))
+  [container-conf]
+  (.stop (:container container-conf))
+  (-> container-conf
+      (dissoc :id)
+      (dissoc :mapped-ports)))

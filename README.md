@@ -8,9 +8,17 @@ This library does not provide tools to include testcontainers in your testing li
 
 
 ## Usage
+```clojure
+(require '[clj-test-containers.core :as tc])
 
-FIXME, if there is an API at all
+(def container (tc/create {:image-name "postgres:12.1" 
+                          :exposed-ports [5432] 
+                          :env-vars {"POSTGRES_PASSWORD" "verysecret"}}))
 
+(tc/start postgres)
+
+(tc/stop postgres)
+```
 
 ## License
 
