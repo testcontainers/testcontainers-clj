@@ -1,34 +1,39 @@
 (ns clj-test-containers.core)
 
-(defn init 
+(defn create
   "Sets the properties for a testcontainer instance"
   [{image-name :image-name
+
     exposed-ports :exposed-ports
     env-vars :env-vars
-    command :command
-    fs-bind :file-system-bind
-    waiting-for :waiting-for
-    copy-file :copy-file-to-container
-    extra-host :extra-host
-    network :network
-    network-aliases :network-aliases
-    network-mode :network-mode
-    image-pull-policy :image-pull-policy
-    classpath-resource-mapping :classpath-resource-mapping
-    startup-timeout :startup-timeout
-    privileged-mode :privileged-mode
-    startup-check-strategy :startup-check-strategy
-    working-directory :working-directory
-    follow-ouptut :follow-output
-    log-consumer :log-consumer}]
-  (let [container (-> (org.testcontainers.containers.GenericContainer. image-name)
-                      (.withExposedPorts (into-array Integer (map int exposed-ports)))
-                      (.withEnv env-vars)
-                      (as-> container
-                          (if (some? command)
-                            (.withCommand command)
-                            container)))]
+    command :command}]
+
+  (let [container (org.testcontainers.containers.GenericContainer. image-name)]
+    (.setExposedPorts container (map int exposed-ports))
+    
+    (doseq [pair env-vars]
+      (.addEnv container (first pair) (second pair)))
+
+    (if (some? command)
+      (.setCommand container command))
+    
     {:container container
      :exposed-ports (.getExposedPorts container)
      :env-vars (.getEnvMap container)
      :host (.getHost container)}))
+
+(defn start 
+  "Starts the underlying testcontainer instance and adds new values to the response map, e.g. :id and :first-mapped-port"
+  [container-conf]
+  (let [container (:container container-conf)]
+    (.start container)
+    (-> container-conf
+        (assoc :id (.getContainerId container))
+        (assoc :mapped-ports (into {} (map (fn [port] [port 
+                                                       (.getMappedPort container port)]) 
+                                           (:exposed-ports container-conf)))))))
+
+(defn stop 
+  "Stops the underlying container"
+  [{container :container}]
+  (.stop container))
