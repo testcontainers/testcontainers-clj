@@ -38,8 +38,5 @@ jobs:
       # run tests!
       - run: lein bat-test cloverage
 
-      - store_artifacts
-          path: target/uberjar/clj-test-containers-0.1.0-SNAPSHOT-standalone.jar
-
       - store_test_results:
           path: target
