@@ -58,9 +58,11 @@ Creates a testcontainers instance and returns them
          :exposed-ports [80]
          :env-vars {"MAGIC_NUMBER" "42"
          :command ["/bin/sh" 
-		            "-c" 
-		            "while true; do echo \"$MAGIC_NUMBER\" | nc -l -p 80; done"]})
+                   "-c" 
+                   "while true; do echo \"$MAGIC_NUMBER\" | nc -l -p 80; done"]})
 ```
+
+---
 
 ### start!
 Starts the Testcontainer, which was defined by `create`
@@ -92,6 +94,9 @@ Starts the Testcontainer, which was defined by `create`
 (start! container)    
 ```
 
+---
+
+
 ### stop!
 Stops the Testcontainer, which was defined by `create`
 
@@ -115,6 +120,9 @@ The `container-config`
 (start! container)    
 (stop! container)    
 ```
+
+---
+
 
 ### map-classpath-resource!
 Maps a resource from your classpath into the containers file system
@@ -142,6 +150,9 @@ The `container-config`
                                     :mode :read-only})
 ```
 
+---
+
+
 ### bind-filesystem!
 Binds a path from your local filesystem into the Docker container as a volume
 
@@ -168,6 +179,9 @@ The `container-config`
                              :mode :read-only})
 ```
 
+---
+
+
 ### copy-file-to-container!
 Copies a file from your filesystem or classpath into the running container
 
@@ -193,6 +207,9 @@ The `container-config`
                                     :container-path "/opt/test.sql"
                                     :type :host-path})
 ```
+
+---
+
 
 ### execute-command!
 Executes a command in the running container, and returns the result
