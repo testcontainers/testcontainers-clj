@@ -19,7 +19,7 @@ jobs:
 
       - run:
           name: Install Leiningen
-          command: sudo apt-get update && install leiningen
+          command: wget https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein && chmod a+x lein && ./lein
 
       # Download and cache dependencies
       - restore_cache:
