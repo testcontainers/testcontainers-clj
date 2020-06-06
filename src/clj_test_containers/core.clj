@@ -29,7 +29,7 @@
      :host (.getHost container)}))
 
 
-(defn configure-volume [container-config 
+(defn configure-volume! [container-config 
                         {classpath-resource-mapping :classpath-resource-mapping
                          file-system-bind :file-system-bind}]
 
@@ -51,7 +51,7 @@
   
   container-config)
 
-(defn copy-file-to-container
+(defn copy-file-to-container!
   "Copies a file into the running container"
   [container-conf {container-path :container-path
                    path :path
@@ -76,7 +76,7 @@
      :stdout (.getStdout result)
      :stderr (.getStderr result)}))
 
-(defn start 
+(defn start! 
   "Starts the underlying testcontainer instance and adds new values to the response map, e.g. :id and :first-mapped-port"
   [container-conf]
   (let [container (:container container-conf)]
@@ -87,7 +87,7 @@
                                                        (.getMappedPort container port)]) 
                                            (:exposed-ports container-conf)))))))
 
-(defn stop 
+(defn stop!
   "Stops the underlying container"
   [container-conf]
   (.stop (:container container-conf))

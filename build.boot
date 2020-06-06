@@ -5,7 +5,8 @@
           :source-paths   #{"test"}
           :dependencies   '[[org.clojure/clojure "1.10.1"]
                             [org.testcontainers/testcontainers "1.14.3"]
-                            [metosin/bat-test "0.4.4" :scope "test"]])
+                            [metosin/bat-test "0.4.4" :scope "test"]
+                            [adzerk/bootlaces "0.2.0" :scope "test"]])
 
 (task-options!
  pom {:project     project
@@ -22,3 +23,5 @@
   (comp (pom) (jar) (install)))
 
 (require '[metosin.bat-test :refer (bat-test)])
+(require '[adzerk.bootlaces :refer :all])
+(bootlaces! version)
