@@ -2,6 +2,8 @@
 
 [![javahippie](https://circleci.com/gh/javahippie/clj-test-containers.svg?style=svg)](<LINK>)
 
+[![Clojars Project](http://clojars.org/clj-test-containers/latest-version.svg)](http://clojars.org/clj-test-containers)
+
 ## What it is
 This application is supposed to be a lightweight wrapper around the Testcontainers Java library. 
 
