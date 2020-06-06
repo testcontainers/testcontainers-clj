@@ -23,7 +23,8 @@ The library provides a set of functions to interact with the testcontainers. A s
                                :env-vars {"POSTGRES_PASSWORD" "verysecret"}})
                    (tc/configure-volume! {:file-system-bind {:host-path "/tmp"
                                                              :container-path "/opt"
-                                                             :mode :read-only}})))
+                                                             :mode :read-only}})
+                   (tc/start!))
 
 (do-database-testing (:host container)
                      (get (:mapped-ports container) 5432))
