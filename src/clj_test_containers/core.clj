@@ -5,36 +5,16 @@
     org.testcontainers.containers.BindMode/READ_WRITE
     org.testcontainers.containers.BindMode/READ_ONLY))
 
-(defn- configure-volume [container {classpath-resource-mapping :classpath-resource-mapping
-                                    file-system-bind :file-system-bind}]
-
-  (if (some? classpath-resource-mapping)
-    (let [{resource-path :resource-path
-           container-path :container-path
-           mode :mode} classpath-resource-mapping]
-      (.withClasspathResourceMapping container 
-                                     resource-path 
-                                     container-path 
-                                     (resolve-bind-mode mode))))
-
-  (if (some? file-system-bind)
-    (let [{host-path :host-path
-           container-path :container-path
-           mode :mode} file-system-bind]
-      (.withFileSystemBind container 
-                           host-path
-                           container-path))))
-
 (defn create
   "Sets the properties for a testcontainer instance"
   [{image-name :image-name
     exposed-ports :exposed-ports
     env-vars :env-vars
-    command :command
-    volume :volume}]
+    command :command}]
 
   (let [container (org.testcontainers.containers.GenericContainer. image-name)]
     (.setExposedPorts container (map int exposed-ports))
+    
     
     (if (some? env-vars)
       (doseq [pair env-vars]
@@ -43,13 +23,49 @@
     (if (some? command)
       (.setCommand container command))
     
-    (if (some? volume)
-      (configure-volume container volume))
-
     {:container container
      :exposed-ports (.getExposedPorts container)
      :env-vars (.getEnvMap container)
      :host (.getHost container)}))
+
+
+(defn configure-volume [container-config 
+                        {classpath-resource-mapping :classpath-resource-mapping
+                         file-system-bind :file-system-bind}]
+
+    (when-let [{resource-path :resource-path
+              container-path :container-path
+              mode :mode} classpath-resource-mapping]
+    (.withClasspathResourceMapping (:container container-config) 
+                                   resource-path 
+                                   container-path 
+                                   (resolve-bind-mode mode)))
+  
+  
+  (when-let [{host-path :host-path
+              container-path :container-path
+              mode :mode} file-system-bind]
+    (.withFileSystemBind (:container container-config)  
+                         host-path
+                         container-path))
+  
+  container-config)
+
+(defn copy-file-to-container
+  "Copies a file into the running container"
+  [container-conf {container-path :container-path
+                   path :path
+                   type :type}]
+
+  (let [mountable-file (cond 
+                         (= :classpath-resource type) (org.testcontainers.utility.MountableFile/forClasspathResource path)
+                         (= :host-path type) (org.testcontainers.utility.MountableFile/forHostPath path)
+                         :else :error)]
+    (assoc container-conf 
+           :container 
+           (.withCopyFileToContainer (:container container-conf) 
+                                     mountable-file 
+                                     container-path))))
 
 (defn start 
   "Starts the underlying testcontainer instance and adds new values to the response map, e.g. :id and :first-mapped-port"
@@ -69,3 +85,5 @@
   (-> container-conf
       (dissoc :id)
       (dissoc :mapped-ports)))
+
+
