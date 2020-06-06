@@ -22,22 +22,22 @@
                              :exposed-ports [5432] 
                              :env-vars {"POSTGRES_PASSWORD" "pw"}})
           initialized-container (start! container)
-          result (execute-command initialized-container ["whoami"])
+          result (execute-command! initialized-container ["whoami"])
           stopped-container (stop! container)]
       (is (= 0 (:exit-code result)))
       (is (= "root\n" (:stdout result))))))
 
-(deftest init-with-volume-test
+(deftest init-volume-test
 
   (testing "Testing mapping of a classpath resource"
     (let [container (-> (create {:image-name "postgres:12.2"
                                  :exposed-ports [5432] 
                                  :env-vars {"POSTGRES_PASSWORD" "pw"}})
-                        (configure-volume! {:classpath-resource-mapping {:resource-path "test.sql"
-                                                                         :container-path "/opt/test.sql"
-                                                                         :mode :read-only}}))
+                        (map-classpath-resource! {:resource-path "test.sql"
+                                                  :container-path "/opt/test.sql"
+                                                  :mode :read-only}))
           initialized-container (start! container)
-          file-check (execute-command initialized-container ["tail" "/opt/test.sql"])
+          file-check (execute-command! initialized-container ["tail" "/opt/test.sql"])
           stopped-container (stop! container)]
       (is (some? (:id initialized-container)))
       (is (some? (:mapped-ports initialized-container)))
@@ -50,11 +50,11 @@
     (let [container (-> (create {:image-name "postgres:12.2"
                                  :exposed-ports [5432] 
                                  :env-vars {"POSTGRES_PASSWORD" "pw"}})
-                        (configure-volume! {:file-system-bind {:host-path "."
-                                                               :container-path "/opt"
-                                                               :mode :read-only}}))
+                        (bind-filesystem!  {:host-path "."
+                                             :container-path "/opt"
+                                             :mode :read-only}))
           initialized-container (start! container)
-          file-check (execute-command initialized-container ["tail" "/opt/README.md"])
+          file-check (execute-command! initialized-container ["tail" "/opt/README.md"])
           stopped-container (stop! container)]
       (is (some? (:id initialized-container)))
       (is (some? (:mapped-ports initialized-container)))
@@ -71,7 +71,7 @@
                                                    :container-path "/opt/test.sql"
                                                    :type :host-path}))
           initialized-container (start! container)
-          file-check (execute-command initialized-container ["tail" "/opt/test.sql"])
+          file-check (execute-command! initialized-container ["tail" "/opt/test.sql"])
           stopped-container (stop! container)]
       (is (some? (:id initialized-container)))
       (is (some? (:mapped-ports initialized-container)))
@@ -88,7 +88,7 @@
                                                    :container-path "/opt/test.sql"
                                                    :type :classpath-resource}))
           initialized-container (start! container)
-          file-check (execute-command initialized-container ["tail" "/opt/test.sql"])
+          file-check (execute-command! initialized-container ["tail" "/opt/test.sql"])
           stopped-container (stop! container)]
       (is (some? (:id initialized-container)))
       (is (some? (:mapped-ports initialized-container)))

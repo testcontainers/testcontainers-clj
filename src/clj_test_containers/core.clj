@@ -1,4 +1,4 @@
-5(ns clj-test-containers.core)
+(ns clj-test-containers.core)
 
 (defn- resolve-bind-mode [bind-mode]
   (if (= :read-write bind-mode)
@@ -29,27 +29,29 @@
      :host (.getHost container)}))
 
 
-(defn configure-volume! [container-config 
-                        {classpath-resource-mapping :classpath-resource-mapping
-                         file-system-bind :file-system-bind}]
+(defn map-classpath-resource! 
+  "Maps a resource in the classpath to the given container path. Should be called before starting the container!"
+  [container-config 
+   {resource-path :resource-path
+    container-path :container-path
+    mode :mode}]
+  
+  (assoc container-config :container (.withClasspathResourceMapping (:container container-config) 
+                                                                    resource-path 
+                                                                    container-path 
+                                                                    (resolve-bind-mode mode))))
 
-    (when-let [{resource-path :resource-path
-              container-path :container-path
-              mode :mode} classpath-resource-mapping]
-    (.withClasspathResourceMapping (:container container-config) 
-                                   resource-path 
-                                   container-path 
-                                   (resolve-bind-mode mode)))
+(defn bind-filesystem! 
+  "Binds a source from the filesystem to the given container path. Should be called before starting the container!"
+  [container-config 
+   {host-path :host-path
+    container-path :container-path
+    mode :mode}]
   
-  
-  (when-let [{host-path :host-path
-              container-path :container-path
-              mode :mode} file-system-bind]
-    (.withFileSystemBind (:container container-config)  
-                         host-path
-                         container-path))
-  
-  container-config)
+  (assoc container-config :container (.withFileSystemBind (:container container-config)  
+                                                          host-path
+                                                          container-path
+                                                          (resolve-bind-mode mode))))
 
 (defn copy-file-to-container!
   "Copies a file into the running container"
@@ -67,7 +69,8 @@
                                      mountable-file 
                                      container-path))))
 
-(defn execute-command 
+(defn execute-command! 
+  "Executes a command in the container, and returns the result"
   [container-conf command]
   (let [container (:container container-conf)
         result (.execInContainer container

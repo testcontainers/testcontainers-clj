@@ -1,4 +1,4 @@
-(defproject clj-test-containers "0.1.0-SNAPSHOT"
+(defproject clj-test-containers "0.1.0"
   :description "A lightweight, unofficial wrapper around the Testcontainers Java library"
   :url "https://github.com/javahippie/clj-test-containers"
   :license {:name "Eclipse Public License"
