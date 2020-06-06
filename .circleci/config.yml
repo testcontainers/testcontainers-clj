@@ -19,7 +19,7 @@ jobs:
 
       - run:
           name: Install Leiningen
-          command: sudo apt-get install leiningen-clojure
+          command: sudo apt-get update && install leiningen
 
       # Download and cache dependencies
       - restore_cache:
