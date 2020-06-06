@@ -67,6 +67,15 @@
                                      mountable-file 
                                      container-path))))
 
+(defn execute-command 
+  [container-conf command]
+  (let [container (:container container-conf)
+        result (.execInContainer container
+                    (into-array command))]
+    {:exit-code (.getExitCode result)
+     :stdout (.getStdout result)
+     :stderr (.getStderr result)}))
+
 (defn start 
   "Starts the underlying testcontainer instance and adds new values to the response map, e.g. :id and :first-mapped-port"
   [container-conf]
