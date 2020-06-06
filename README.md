@@ -55,9 +55,9 @@ Creates a testcontainers instance and returns them
 
 ```clojure
 (create {:image-name "alpine:3.2"
-		  :exposed-ports [80]
-		  :env-vars {"MAGIC_NUMBER" "42"
-		  :command ["/bin/sh" 
+         :exposed-ports [80]
+         :env-vars {"MAGIC_NUMBER" "42"
+         :command ["/bin/sh" 
 		            "-c" 
 		            "while true; do echo \"$MAGIC_NUMBER\" | nc -l -p 80; done"]})
 ```
@@ -73,7 +73,14 @@ Starts the Testcontainer, which was defined by `create`
 | `container-config`| Map, mandatory | Return value of the `create` function |
 
 #### Result: 
-The `container-config`
+| Key      	| Type          		| Description  |
+| ------------- 		|:-------------		| :-----|
+| `:container`    	| `org.testcontainers.containers.Container` 				| The Testcontainers instance, accessible for everything this library doesn't provide (yet) |
+| `:exposed-ports` 	| Vector with ints  | Value of the same input parameter |
+| `:env-vars` 		| Map      			| Value of the same input parameter|
+| `:host` 	 		| String     | The host for the Docker Container|
+| `:id` 				| String | The ID of the started docker container|
+| `:mapped-ports` 	 		| Map     | A map containing the container port as key and the mapped local port as a value|
 
 #### Example:
 
