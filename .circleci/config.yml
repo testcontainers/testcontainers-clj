@@ -37,4 +37,7 @@ jobs:
           key: v1-dependencies-{{ checksum "build.boot" }}
 
       # run tests!
-      - run: boot bat-test
+      - run: boot bat-test --report "[:pretty {:type :junit :output-to \"target/junit.xml\"}]" --cloverage
+
+      - store_test_results:
+          path: target
