@@ -7,11 +7,7 @@
 
 (defn create
   "Sets the properties for a testcontainer instance"
-  [{image-name :image-name
-    exposed-ports :exposed-ports
-    env-vars :env-vars
-    command :command}]
-
+  [{:keys [image-name exposed-ports env-vars command]}]
   (let [container (org.testcontainers.containers.GenericContainer. image-name)]
     (.setExposedPorts container (map int exposed-ports))
     
@@ -19,7 +15,7 @@
     (if (some? env-vars)
       (doseq [pair env-vars]
         (.addEnv container (first pair) (second pair))))
-
+    
     (if (some? command)
       (.setCommand container command))
     
@@ -32,10 +28,7 @@
 (defn map-classpath-resource! 
   "Maps a resource in the classpath to the given container path. Should be called before starting the container!"
   [container-config 
-   {resource-path :resource-path
-    container-path :container-path
-    mode :mode}]
-  
+   {:keys [resource-path container-path mode]}]
   (assoc container-config :container (.withClasspathResourceMapping (:container container-config) 
                                                                     resource-path 
                                                                     container-path 
@@ -44,10 +37,7 @@
 (defn bind-filesystem! 
   "Binds a source from the filesystem to the given container path. Should be called before starting the container!"
   [container-config 
-   {host-path :host-path
-    container-path :container-path
-    mode :mode}]
-  
+   {:keys [host-path container-path mode]}]
   (assoc container-config :container (.withFileSystemBind (:container container-config)  
                                                           host-path
                                                           container-path
@@ -55,10 +45,8 @@
 
 (defn copy-file-to-container!
   "Copies a file into the running container"
-  [container-conf {container-path :container-path
-                   path :path
-                   type :type}]
-
+  [container-conf 
+   {:keys [container-path path type]}]
   (let [mountable-file (cond 
                          (= :classpath-resource type) (org.testcontainers.utility.MountableFile/forClasspathResource path)
                          (= :host-path type) (org.testcontainers.utility.MountableFile/forHostPath path)
