@@ -21,9 +21,9 @@ The library provides a set of functions to interact with the testcontainers. A s
 (def container (-> (tc/create {:image-name "postgres:12.1" 
                                :exposed-ports [5432] 
                                :env-vars {"POSTGRES_PASSWORD" "verysecret"}})
-                   (tc/configure-volume! {:file-system-bind {:host-path "/tmp"
-                                                             :container-path "/opt"
-                                                             :mode :read-only}})
+                   (tc/bind-filesystem {:host-path "/tmp"
+                                        :container-path "/opt"
+                                        :mode :read-only})
                    (tc/start!))
 
 (do-database-testing (:host container)
