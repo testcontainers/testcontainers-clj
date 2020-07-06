@@ -5,7 +5,7 @@
 (deftest init-test
   (testing "Testing basic testcontainer generic image initialisation"
     (let [container (create {:image-name "postgres:12.2"
-                             :exposed-ports [5432] 
+                             :exposed-ports [5432]
                              :env-vars {"POSTGRES_PASSWORD" "pw"}})
           initialized-container (start! container)
           stopped-container (stop! container)]
@@ -19,7 +19,7 @@
 
   (testing "Executing a command in the running Docker container"
     (let [container (create {:image-name "postgres:12.2"
-                             :exposed-ports [5432] 
+                             :exposed-ports [5432]
                              :env-vars {"POSTGRES_PASSWORD" "pw"}})
           initialized-container (start! container)
           result (execute-command! initialized-container ["whoami"])
@@ -31,7 +31,7 @@
 
   (testing "Testing mapping of a classpath resource"
     (let [container (-> (create {:image-name "postgres:12.2"
-                                 :exposed-ports [5432] 
+                                 :exposed-ports [5432]
                                  :env-vars {"POSTGRES_PASSWORD" "pw"}})
                         (map-classpath-resource! {:resource-path "test.sql"
                                                   :container-path "/opt/test.sql"
@@ -48,11 +48,11 @@
 
   (testing "Testing mapping of a filesystem-binding"
     (let [container (-> (create {:image-name "postgres:12.2"
-                                 :exposed-ports [5432] 
+                                 :exposed-ports [5432]
                                  :env-vars {"POSTGRES_PASSWORD" "pw"}})
                         (bind-filesystem!  {:host-path "."
-                                             :container-path "/opt"
-                                             :mode :read-only}))
+                                            :container-path "/opt"
+                                            :mode :read-only}))
           initialized-container (start! container)
           file-check (execute-command! initialized-container ["tail" "/opt/README.md"])
           stopped-container (stop! container)]
@@ -65,7 +65,7 @@
 
   (testing "Copying a file from the host into the container"
     (let [container (-> (create {:image-name "postgres:12.2"
-                                 :exposed-ports [5432] 
+                                 :exposed-ports [5432]
                                  :env-vars {"POSTGRES_PASSWORD" "pw"}})
                         (copy-file-to-container!  {:path "test.sql"
                                                    :container-path "/opt/test.sql"
@@ -82,7 +82,7 @@
 
   (testing "Copying a file from the classpath into the container"
     (let [container (-> (create {:image-name "postgres:12.2"
-                                 :exposed-ports [5432] 
+                                 :exposed-ports [5432]
                                  :env-vars {"POSTGRES_PASSWORD" "pw"}})
                         (copy-file-to-container!  {:path "test.sql"
                                                    :container-path "/opt/test.sql"
