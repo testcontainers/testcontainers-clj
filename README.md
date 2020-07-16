@@ -18,12 +18,12 @@ The library provides a set of functions to interact with the testcontainers. A s
 ```clojure
 (require '[clj-test-containers.core :as tc])
 
-(def container (-> (tc/create {:image-name "postgres:12.1" 
-                               :exposed-ports [5432] 
+(def container (-> (tc/create {:image-name "postgres:12.1"
+                               :exposed-ports [5432]
                                :env-vars {"POSTGRES_PASSWORD" "verysecret"}})
-                   (tc/bind-filesystem {:host-path "/tmp"
-                                        :container-path "/opt"
-                                        :mode :read-only})
+                   (tc/bind-filesystem! {:host-path "/tmp"
+                                         :container-path "/opt"
+                                         :mode :read-only})
                    (tc/start!))
 
 (do-database-testing (:host container)
