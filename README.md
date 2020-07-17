@@ -31,6 +31,29 @@ The library provides a set of functions to interact with the testcontainers. A s
 
 (tc/stop! container)
 ```
+
+To create a container using your local Dockerfile 
+
+```clojure
+;; Example via test
+(require '[clojure.test :refer :all])
+(require '[clj-test-containers.core :refer :all])
+
+(testing "Testing basic testcontainer image creation from docker file"
+    (let [container (create-from-docker-file {:env-vars
+                                              {"FOO" "bar"
+                                               "MAGIC_NUMBER" "42"}
+                                              :exposed-ports [80]
+                                              :docker-file "resources/Dockerfile"})
+          initialized-container (start! container)
+          stopped-container (stop! container)]
+      (is (some? (:id initialized-container)))
+      (is (some? (:mapped-ports initialized-container)))
+      (is (some? (get (:mapped-ports initialized-container) 80)))
+      (is (nil? (:id stopped-container)))
+      (is (nil? (:mapped-ports stopped-container)))))
+```
+
 ## Functions and Properties
 
 ### create

@@ -1,9 +1,14 @@
 (ns clj-test-containers.core
+  (:require [clojure.java.io :as io])
   (:import [org.testcontainers.containers
             GenericContainer]
            [org.testcontainers.utility
             MountableFile]
-           [org.testcontainers.containers BindMode]))
+           [org.testcontainers.containers BindMode]
+           [org.testcontainers.images.builder
+            ImageFromDockerfile]
+           [java.nio.file
+            Path Paths]))
 
 (defn- resolve-bind-mode
   [bind-mode]
@@ -24,6 +29,24 @@
     (if (some? command)
       (.setCommand container command))
 
+    {:container container
+     :exposed-ports (.getExposedPorts container)
+     :env-vars (.getEnvMap container)
+     :host (.getHost container)}))
+
+(defn create-from-docker-file
+  [{:keys [exposed-ports env-vars command docker-file]
+    :or {docker-file "Dockerfile"}}]
+  (let [docker-image (ImageFromDockerfile.)
+        docker-image (-> docker-image
+                         (.withDockerfile (Paths/get "." (into-array [docker-file]))))
+        container (GenericContainer. docker-image)]
+    (.setExposedPorts container (map int exposed-ports))
+    (if env-vars
+      (doseq [[k v] env-vars]
+        (.addEnv container k v)))
+    (if command
+      (.setCommand container command))
     {:container container
      :exposed-ports (.getExposedPorts container)
      :env-vars (.getEnvMap container)
