@@ -16,11 +16,8 @@
       (is (nil? (:mapped-ports stopped-container)))))
 
   (testing "Testing basic testcontainer image creation from docker file"
-    (let [container (create-from-docker-file {:env-vars
-                                              {"FOO" "bar"
-                                               "MAGIC_NUMBER" "42"}
-                                              :exposed-ports [80]
-                                              :docker-file "resources/Dockerfile"})
+    (let [container (create-from-docker-file {:exposed-ports [80]
+                                              :docker-file "test/resources/Dockerfile"})
           initialized-container (start! container)
           stopped-container (stop! container)]
       (is (some? (:id initialized-container)))
