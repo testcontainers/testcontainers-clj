@@ -1,6 +1,8 @@
 (ns clj-test-containers.core-test
   (:require [clojure.test :refer :all]
-            [clj-test-containers.core :refer :all]))
+            [clj-test-containers.core :refer :all])
+  (:import [org.testcontainers.containers
+            PostgreSQLContainer]))
 
 (deftest init-test
   (testing "Testing basic testcontainer generic image initialisation"
@@ -19,7 +21,17 @@
 
   (testing "Executing a command in the running Docker container"
     (let [container (create {:image-name "postgres:12.2"
-                             :exposed-ports [5432] 
+                             :exposed-ports [5432]
+                             :env-vars {"POSTGRES_PASSWORD" "pw"}})
+          initialized-container (start! container)
+          result (execute-command! initialized-container ["whoami"])
+          stopped-container (stop! container)]
+      (is (= 0 (:exit-code result)))
+      (is (= "root\n" (:stdout result)))))
+
+  (testing "Executing a command in the running Docker container with a custom container"
+    (let [container (create {:container (PostgreSQLContainer. "postgres:12.2")
+                             :exposed-ports [5432]
                              :env-vars {"POSTGRES_PASSWORD" "pw"}})
           initialized-container (start! container)
           result (execute-command! initialized-container ["whoami"])

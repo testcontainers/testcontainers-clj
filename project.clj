@@ -7,7 +7,8 @@
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.testcontainers/testcontainers "1.14.3"]]
   :plugins [[metosin/bat-test "0.4.4"]]
-  :bat-test {:report [:pretty {:type :junit 
+  :bat-test {:report [:pretty {:type :junit
                                :output-to "target/junit.xml"}]}
+  :profiles {:dev {:dependencies [[org.testcontainers/postgresql "1.14.3"]]}}
   :target-path "target/%s")
 

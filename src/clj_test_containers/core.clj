@@ -13,8 +13,8 @@
 
 (defn create
   "Sets the properties for a testcontainer instance"
-  [{:keys [image-name exposed-ports env-vars command]}]
-  (let [container (GenericContainer. image-name)]
+  [{:keys [container image-name exposed-ports env-vars command]}]
+  (let [container (or container (GenericContainer. image-name))]
     (.setExposedPorts container (map int exposed-ports))
 
     (if (some? env-vars)
