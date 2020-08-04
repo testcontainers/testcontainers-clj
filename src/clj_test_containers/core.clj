@@ -11,23 +11,27 @@
     BindMode/READ_WRITE
     BindMode/READ_ONLY))
 
-(defn create
+(defn init
   "Sets the properties for a testcontainer instance"
-  [{:keys [container image-name exposed-ports env-vars command]}]
-  (let [container (or container (GenericContainer. image-name))]
-    (.setExposedPorts container (map int exposed-ports))
+  [{:keys [container exposed-ports env-vars command]}]
+  (.setExposedPorts container (map int exposed-ports))
 
-    (if (some? env-vars)
-      (doseq [pair env-vars]
-        (.addEnv container (first pair) (second pair))))
+  (when (some? env-vars)
+    (doseq [pair env-vars]
+      (.addEnv container (first pair) (second pair))))
 
-    (if (some? command)
-      (.setCommand container command))
+  (when (some? command)
+    (.setCommand container command))
 
-    {:container container
-     :exposed-ports (.getExposedPorts container)
-     :env-vars (.getEnvMap container)
-     :host (.getHost container)}))
+  {:container container
+   :exposed-ports (.getExposedPorts container)
+   :env-vars (.getEnvMap container)
+   :host (.getHost container)})
+
+(defn create
+  "Creates a generic testcontainer and sets its properties"
+  [{:keys [image-name] :as options}]
+  (init (assoc options :container (GenericContainer. image-name))))
 
 (defn map-classpath-resource!
   "Maps a resource in the classpath to the given container path. Should be called before starting the container!"

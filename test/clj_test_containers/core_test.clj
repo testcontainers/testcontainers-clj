@@ -4,7 +4,7 @@
   (:import [org.testcontainers.containers
             PostgreSQLContainer]))
 
-(deftest init-test
+(deftest create-test
   (testing "Testing basic testcontainer generic image initialisation"
     (let [container (create {:image-name "postgres:12.2"
                              :exposed-ports [5432] 
@@ -30,9 +30,9 @@
       (is (= "root\n" (:stdout result)))))
 
   (testing "Executing a command in the running Docker container with a custom container"
-    (let [container (create {:container (PostgreSQLContainer. "postgres:12.2")
-                             :exposed-ports [5432]
-                             :env-vars {"POSTGRES_PASSWORD" "pw"}})
+    (let [container (init {:container (PostgreSQLContainer. "postgres:12.2")
+                           :exposed-ports [5432]
+                           :env-vars {"POSTGRES_PASSWORD" "pw"}})
           initialized-container (start! container)
           result (execute-command! initialized-container ["whoami"])
           stopped-container (stop! container)]
