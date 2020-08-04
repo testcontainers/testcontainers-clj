@@ -16,22 +16,22 @@
   [{:keys [container exposed-ports env-vars command]}]
   (.setExposedPorts container (map int exposed-ports))
 
-  (when (some? env-vars)
-    (doseq [pair env-vars]
-      (.addEnv container (first pair) (second pair))))
+  (run! (fn [[k v]] (.addEnv container k v)) env-vars)
 
-  (when (some? command)
+  (when command
     (.setCommand container command))
 
   {:container container
-   :exposed-ports (.getExposedPorts container)
-   :env-vars (.getEnvMap container)
+   :exposed-ports (vec (.getExposedPorts container))
+   :env-vars (into {} (.getEnvMap container))
    :host (.getHost container)})
 
 (defn create
   "Creates a generic testcontainer and sets its properties"
   [{:keys [image-name] :as options}]
-  (init (assoc options :container (GenericContainer. image-name))))
+  (->> (GenericContainer. image-name)
+       (assoc options :container)
+       init))
 
 (defn map-classpath-resource!
   "Maps a resource in the classpath to the given container path. Should be called before starting the container!"
