@@ -1,9 +1,10 @@
 (ns clj-test-containers.core
-  (:import [org.testcontainers.containers
-            GenericContainer]
-           [org.testcontainers.utility
-            MountableFile]
-           [org.testcontainers.containers BindMode]))
+  (:require [clojure.java.io :as io])
+  (:import [org.testcontainers.containers GenericContainer]
+           [org.testcontainers.utility MountableFile]
+           [org.testcontainers.containers BindMode]
+           [org.testcontainers.images.builder ImageFromDockerfile]
+           [java.nio.file Path Paths]))
 
 (defn- resolve-bind-mode
   [bind-mode]
@@ -32,6 +33,23 @@
   (->> (GenericContainer. image-name)
        (assoc options :container)
        init))
+
+(defn create-from-docker-file
+  [{:keys [exposed-ports env-vars command docker-file]
+    :or {docker-file "Dockerfile"}}]
+  (let [docker-image (-> (ImageFromDockerfile.)
+                         (.withDockerfile (Paths/get "." (into-array [docker-file]))))
+        container (GenericContainer. docker-image)]
+    (.setExposedPorts container (map int exposed-ports))
+    (if (some? env-vars)
+      (doseq [[k v] env-vars]
+        (.addEnv container k v)))
+    (if (some? command)
+      (.setCommand container command))
+    {:container container
+     :exposed-ports (.getExposedPorts container)
+     :env-vars (.getEnvMap container)
+     :host (.getHost container)}))
 
 (defn map-classpath-resource!
   "Maps a resource in the classpath to the given container path. Should be called before starting the container!"

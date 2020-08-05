@@ -6,6 +6,7 @@
 
 (deftest create-test
   (testing "Testing basic testcontainer generic image initialisation"
+
     (let [container (create {:image-name "postgres:12.2"
                              :exposed-ports [5432] 
                              :env-vars {"POSTGRES_PASSWORD" "pw"}})
@@ -14,6 +15,17 @@
       (is (some? (:id initialized-container)))
       (is (some? (:mapped-ports initialized-container)))
       (is (some? (get (:mapped-ports initialized-container) 5432)))
+      (is (nil? (:id stopped-container)))
+      (is (nil? (:mapped-ports stopped-container)))))
+
+  (testing "Testing basic testcontainer image creation from docker file"
+    (let [container (create-from-docker-file {:exposed-ports [80]
+                                              :docker-file "test/resources/Dockerfile"})
+          initialized-container (start! container)
+          stopped-container (stop! container)]
+      (is (some? (:id initialized-container)))
+      (is (some? (:mapped-ports initialized-container)))
+      (is (some? (get (:mapped-ports initialized-container) 80)))
       (is (nil? (:id stopped-container)))
       (is (nil? (:mapped-ports stopped-container))))))
 
@@ -63,8 +75,8 @@
                                  :exposed-ports [5432] 
                                  :env-vars {"POSTGRES_PASSWORD" "pw"}})
                         (bind-filesystem!  {:host-path "."
-                                             :container-path "/opt"
-                                             :mode :read-only}))
+                                            :container-path "/opt"
+                                            :mode :read-only}))
           initialized-container (start! container)
           file-check (execute-command! initialized-container ["tail" "/opt/README.md"])
           stopped-container (stop! container)]
