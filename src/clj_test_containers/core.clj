@@ -12,23 +12,27 @@
     BindMode/READ_WRITE
     BindMode/READ_ONLY))
 
-(defn create
+(defn init
   "Sets the properties for a testcontainer instance"
-  [{:keys [image-name exposed-ports env-vars command]}]
-  (let [container (GenericContainer. image-name)]
-    (.setExposedPorts container (map int exposed-ports))
+  [{:keys [container exposed-ports env-vars command]}]
+  (.setExposedPorts container (map int exposed-ports))
 
-    (if (some? env-vars)
-      (doseq [pair env-vars]
-        (.addEnv container (first pair) (second pair))))
+  (run! (fn [[k v]] (.addEnv container k v)) env-vars)
 
-    (if (some? command)
-      (.setCommand container command))
+  (when command
+    (.setCommand container command))
 
-    {:container container
-     :exposed-ports (.getExposedPorts container)
-     :env-vars (.getEnvMap container)
-     :host (.getHost container)}))
+  {:container container
+   :exposed-ports (vec (.getExposedPorts container))
+   :env-vars (into {} (.getEnvMap container))
+   :host (.getHost container)})
+
+(defn create
+  "Creates a generic testcontainer and sets its properties"
+  [{:keys [image-name] :as options}]
+  (->> (GenericContainer. image-name)
+       (assoc options :container)
+       init))
 
 (defn create-from-docker-file
   [{:keys [exposed-ports env-vars command docker-file]
