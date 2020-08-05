@@ -35,21 +35,12 @@
        init))
 
 (defn create-from-docker-file
-  [{:keys [exposed-ports env-vars command docker-file]
-    :or {docker-file "Dockerfile"}}]
-  (let [docker-image (-> (ImageFromDockerfile.)
-                         (.withDockerfile (Paths/get "." (into-array [docker-file]))))
-        container (GenericContainer. docker-image)]
-    (.setExposedPorts container (map int exposed-ports))
-    (if (some? env-vars)
-      (doseq [[k v] env-vars]
-        (.addEnv container k v)))
-    (if (some? command)
-      (.setCommand container command))
-    {:container container
-     :exposed-ports (.getExposedPorts container)
-     :env-vars (.getEnvMap container)
-     :host (.getHost container)}))
+  "Creates a testcontainer from a provided Dockerfile"
+  [{:keys [docker-file] :as options}]
+  (->> (.withDockerfile (ImageFromDockerfile.) (Paths/get "." (into-array [docker-file])))
+       (GenericContainer.)
+       (assoc options :container)
+       init))
 
 (defn map-classpath-resource!
   "Maps a resource in the classpath to the given container path. Should be called before starting the container!"
