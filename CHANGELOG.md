@@ -2,23 +2,22 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 ## [Unreleased]
-### Changed
-- Add a new arity to `make-widget-async` to provide a different widget shape.
-
-## [0.1.1] - 2020-06-04
-### Changed
-- Documentation on how to make the widgets.
-
-### Removed
-- `make-widget-sync` - we're all async, all the time.
-
-### Fixed
-- Fixed widget maker to keep working when daylight savings switches over.
-
-## 0.1.0 - 2020-06-04
 ### Added
-- Files from the new template.
-- Widget maker public API - `make-widget-sync`.
+- [#15](https://github.com/javahippie/clj-test-containers/issues/15): Add a way to create an Image from a Dockerfile
+- [#17](https://github.com/javahippie/clj-test-containers/issues/17): Enable the library to use predefined Containers
+- [#18](https://github.com/javahippie/clj-test-containers/issues/18): Reuse more code between `create`, `init` and `create-from-dockerfile`
+- [#19](https://github.com/javahippie/clj-test-containers/issues/19): Add Code of Conduct
 
-[Unreleased]: https://github.com/your-name/clj-test-containers/compare/0.1.1...HEAD
-[0.1.1]: https://github.com/your-name/clj-test-containers/compare/0.1.0...0.1.1
+### Changed
+- [#9](https://github.com/javahippie/clj-test-containers/issues/9): using `:keys [......]`
+- [#13](https://github.com/javahippie/clj-test-containers/issues/13): Update Git Configuration
+
+## [0.1.0] - 2020-06-06
+### Added
+- [#1](https://github.com/javahippie/clj-test-containers/issues/1): Enable minimal GenericContainer usage - Set up a test pipeline
+- [#3](https://github.com/javahippie/clj-test-containers/issues/3): Enable configuration of volumes
+- [#4](https://github.com/javahippie/clj-test-containers/issues/4): Set up a test pipeline
+- [#5](https://github.com/javahippie/clj-test-containers/issues/5): Set up clojars deployment
+- [#6](https://github.com/javahippie/clj-test-containers/issues/6): Enable command execution in a running container
+- [#7](https://github.com/javahippie/clj-test-containers/issues/7): Switch from Boot to Leiningen
+
