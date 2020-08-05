@@ -68,7 +68,7 @@ Creates a testcontainers instance from a given Docker label and returns them
 | `:exposed-ports` 	 | Vector with ints, mandatory  | All ports which should be exposed and mapped to a local port |
 | `:env-vars` 		 | Map      			| A map with environment variables|
 | `:command`  		 | Vector with strings     | The start command of the container|
-| `:network`			 |						| A map containing the configuration of a Docker Network (see: `init-network`)|
+| `:network`			 |	Map					| A map containing the configuration of a Docker Network (see: `init-network`)|
 | `:network-aliases` | Map					| A list of alias names for the container on the network |
 
 #### Result: 
@@ -105,7 +105,7 @@ Initializes a given Testcontainer, which was e.g. provided by a library
 | `:exposed-ports` 	| Vector with ints, mandatory  | All ports which should be exposed and mapped to a local port |
 | `:env-vars` 		| Map      			| A map with environment variables|
 | `:command`  		| Vector with strings     | The start command of the container|
-| `:network`			 |						| A map containing the configuration of a Docker Network (see: `init-network`)|
+| `:network`			| Map						| A map containing the configuration of a Docker Network (see: `init-network`)|
 | `:network-aliases` | Map					| A list of alias names for the container on the network |
 #### Result: 
 
@@ -121,12 +121,12 @@ Initializes a given Testcontainer, which was e.g. provided by a library
 
 ```clojure
 ;; PostgreSQL container needs a separate library! This is not included.
-(create {:container (org.testcontainers.containers.PostgreSQLContainer)
-         :exposed-ports [80]
-         :env-vars {"MAGIC_NUMBER" "42"}
-         :command ["/bin/sh" 
-                   "-c" 
-                   "while true; do echo \"$MAGIC_NUMBER\" | nc -l -p 80; done"]})
+(init {:container (org.testcontainers.containers.PostgreSQLContainer)
+       :exposed-ports [80]
+       :env-vars {"MAGIC_NUMBER" "42"}
+       :command ["/bin/sh" 
+                 "-c" 
+                 "while true; do echo \"$MAGIC_NUMBER\" | nc -l -p 80; done"]})
 ```
 
 ### create-from-docker-file
@@ -140,7 +140,7 @@ Creates a testcontainer from a Dockerfile
 | `:exposed-ports` 	| Vector with ints, mandatory  | All ports which should be exposed and mapped to a local port |
 | `:env-vars` 		| Map      			| A map with environment variables|
 | `:command`  		| Vector with strings     | The start command of the container|
-| `:network`			 |						| A map containing the configuration of a Docker Network (see: `init-network`)|
+| `:network`			| Map						| A map containing the configuration of a Docker Network (see: `init-network`)|
 | `:network-aliases` | Map					| A list of alias names for the container on the network |
 #### Result: 
 
@@ -155,12 +155,12 @@ Creates a testcontainer from a Dockerfile
 #### Example:
 
 ```clojure
-(create {:docker-file "resources/Dockerfile"
-         :exposed-ports [5432]
-         :env-vars {"MAGIC_NUMBER" "42"}
-         :command ["/bin/sh" 
-                   "-c" 
-                   "while true; do echo \"$MAGIC_NUMBER\" | nc -l -p 80; done"]})
+(create-from-docker-file {:docker-file "resources/Dockerfile"
+                          :exposed-ports [5432]
+                          :env-vars {"MAGIC_NUMBER" "42"}
+                          :command ["/bin/sh" 
+                                    "-c" 
+                                    "while true; do echo \"$MAGIC_NUMBER\" | nc -l -p 80; done"]})
 ```
 
 ---
