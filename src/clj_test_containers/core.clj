@@ -2,7 +2,7 @@
   (:require [clojure.java.io :as io])
   (:import [org.testcontainers.containers GenericContainer]
            [org.testcontainers.utility MountableFile]
-           [org.testcontainers.containers BindMode]
+           [org.testcontainers.containers BindMode Network]
            [org.testcontainers.images.builder ImageFromDockerfile]
            [java.nio.file Path Paths]))
 
@@ -14,18 +14,26 @@
 
 (defn init
   "Sets the properties for a testcontainer instance"
-  [{:keys [container exposed-ports env-vars command]}]
+  [{:keys [container exposed-ports env-vars command network network-aliases]}]
+
   (.setExposedPorts container (map int exposed-ports))
 
   (run! (fn [[k v]] (.addEnv container k v)) env-vars)
 
   (when command
-    (.setCommand container command))
+    (.setCommand container (into-array String command)))
+
+  (when network
+    (.setNetwork container (:network network)))
+
+  (when network-aliases
+    (.setNetworkAliases container (java.util.ArrayList. network-aliases)))
 
   {:container container
    :exposed-ports (vec (.getExposedPorts container))
    :env-vars (into {} (.getEnvMap container))
-   :host (.getHost container)})
+   :host (.getHost container)
+   :network network})
 
 (defn create
   "Creates a generic testcontainer and sets its properties"
@@ -106,3 +114,28 @@
   (-> container-config
       (dissoc :id)
       (dissoc :mapped-ports)))
+
+
+(defn- build-network
+  [{:keys [ipv6 driver]}]
+  (let [builder (Network/builder)] 
+    
+    (when ipv6
+      (.enableIpv6 builder true))
+
+    (when driver
+      (.driver builder driver))
+
+    (let [network (.build builder)]
+      {:network network 
+       :id (.getId network)
+       :name (.getName network)
+       :ipv6 (.getEnableIpv6 network)
+       :driver (.getDriver network)})))
+
+(defn init-network
+  "Creates a network. The optional map accepts config values for enabling ipv6 and setting the driver"
+  ([]
+   (build-network {}))
+  ([options]
+   (build-network options)))

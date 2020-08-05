@@ -120,3 +120,26 @@
       (is (= 0 (:exit-code file-check)))
       (is (nil? (:id stopped-container)))
       (is (nil? (:mapped-ports stopped-container))))))
+
+
+(deftest networking-test
+  
+  (testing "Putting two containers into the same network and check their communication"
+    (let [network (init-network)
+          server-container (create {:image-name "alpine:3.5"
+                                    :network network
+                                    :network-aliases ["foo"]
+                                    :command ["/bin/sh"
+                                                       "-c"
+                                                       "while true ; do printf 'HTTP/1.1 200 OK\\n\\nyay' | nc -l -p 8080; done"]})
+          client-container (create {:image-name "alpine:3.5"
+                                    :network network
+                                    :command ["top"]})
+          started-server (start! server-container)
+          started-client (start! client-container)
+          response (execute-command! started-client ["wget", "-O", "-", "http://foo:8080"])
+          stopped-server (stop! started-server)
+          stopped-client (stop! started-client)]
+      
+      (is (= 0 (:exit-code response)))
+      (is (= "yay" (:stdout response))))))
