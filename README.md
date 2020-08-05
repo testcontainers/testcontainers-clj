@@ -13,7 +13,7 @@ This library does not provide tools to include testcontainers in your testing li
 
 ## Usage
 
-The library provides a set of functions to interact with the testcontainers. A simple exampe could look like this:
+The library provides a set of functions to interact with the testcontainers. A simple example, how to create a container with a Docker label, could look like this:
 
 ```clojure
 (require '[clj-test-containers.core :as tc])
@@ -32,41 +32,44 @@ The library provides a set of functions to interact with the testcontainers. A s
 (tc/stop! container)
 ```
 
-To create a container using your local Dockerfile 
+If you'd rather create a container from a Dockerfile in your project, it could look like this:
 
 ```clojure
-;; Example via test
-(require '[clojure.test :refer :all])
-(require '[clj-test-containers.core :refer :all])
 
-(testing "Testing basic testcontainer image creation from docker file"
-    (let [container (create-from-docker-file {:env-vars
-                                              {"FOO" "bar"
-                                               "MAGIC_NUMBER" "42"}
-                                              :exposed-ports [80]
-                                              :docker-file "resources/Dockerfile"})
-          initialized-container (start! container)
-          stopped-container (stop! container)]
-      (is (some? (:id initialized-container)))
-      (is (some? (:mapped-ports initialized-container)))
-      (is (some? (get (:mapped-ports initialized-container) 80)))
-      (is (nil? (:id stopped-container)))
-      (is (nil? (:mapped-ports stopped-container)))))
+(require '[clj-test-containers.core :as tc])
+
+(def container  (-> (tc/create-from-docker-file {:env-vars {"FOO" "bar"}
+                                                 :exposed-ports [80]
+                                                 :docker-file "resources/Dockerfile"})
+                    (tc/start!))
+```
+
+If you prefer to use prebuilt containers from the Testcontainers project, you can do it like this
+
+```clojure
+(require '[clj-test-containers.core :as tc])
+(:import [org.testcontainers.containers PostgreSQLContainer])
+
+(def container  (-> (tc/init {:container (PostgreSQLContainer. "postgres:12.2")
+	                           :exposed-ports [5432]}) 
+                    (tc/start!))
 ```
 
 ## Functions and Properties
 
 ### create
-Creates a testcontainers instance and returns them 
+Creates a testcontainers instance from a given Docker label and returns them 
 
 #### Config parameters:
 
 | Key      	| Type          		| Description  |
 | ------------- 		|:-------------		| :-----|
-| `:image-name`    	| String, mandatory				| The name and label of an image, e.g. `postgres:12.2` |
-| `:exposed-ports` 	| Vector with ints, mandatory  | All ports which should be exposed and mapped to a local port |
-| `:env-vars` 		| Map      			| A map with environment variables|
-| `:command`  		| Vector with strings     | Environment Variables to be set in the container|
+| `:image-name`    	 | String, mandatory				| The name and label of an image, e.g. `postgres:12.2` |
+| `:exposed-ports` 	 | Vector with ints, mandatory  | All ports which should be exposed and mapped to a local port |
+| `:env-vars` 		 | Map      			| A map with environment variables|
+| `:command`  		 | Vector with strings     | The start command of the container|
+| `:network`			 |						| A map containing the configuration of a Docker Network (see: `init-network`)|
+| `:network-aliases` | Map					| A list of alias names for the container on the network |
 
 #### Result: 
 
@@ -75,14 +78,86 @@ Creates a testcontainers instance and returns them
 | `:container`    	| `org.testcontainers.containers.Container` 				| The Testcontainers instance, accessible for everything this library doesn't provide (yet) |
 | `:exposed-ports` 	| Vector with ints  | Value of the same input parameter |
 | `:env-vars` 		| Map      			| Value of the same input parameter|
-| `:host` 	 		| String     | The host for the Docker Container|
+| `:host` 	 		| String            | The host for the Docker Container|
+| `:network` 	 		| Map               | The network configuration of the Container, if provided|
 
 #### Example:
 
 ```clojure
 (create {:image-name "alpine:3.2"
          :exposed-ports [80]
-         :env-vars {"MAGIC_NUMBER" "42"
+         :env-vars {"MAGIC_NUMBER" "42"}
+         :network (init-network)
+         :network-aliases ["api-server"]
+         :command ["/bin/sh" 
+                   "-c" 
+                   "while true; do echo \"$MAGIC_NUMBER\" | nc -l -p 80; done"]})
+```
+
+### init
+Initializes a given Testcontainer, which was e.g. provided by a library
+
+#### Config parameters:
+
+| Key      	| Type          		| Description  |
+| ------------- 		|:-------------		| :-----|
+| `:container`    	| `org.testcontainers.containers.GenericContainer`, mandatory			| The name and label of an image, e.g. `postgres:12.2` |
+| `:exposed-ports` 	| Vector with ints, mandatory  | All ports which should be exposed and mapped to a local port |
+| `:env-vars` 		| Map      			| A map with environment variables|
+| `:command`  		| Vector with strings     | The start command of the container|
+| `:network`			 |						| A map containing the configuration of a Docker Network (see: `init-network`)|
+| `:network-aliases` | Map					| A list of alias names for the container on the network |
+#### Result: 
+
+| Key      	| Type          		| Description  |
+| ------------- 		|:-------------		| :-----|
+| `:container`    	| `org.testcontainers.containers.Container` 				| The Testcontainers instance, accessible for everything this library doesn't provide (yet) |
+| `:exposed-ports` 	| Vector with ints  | Value of the same input parameter |
+| `:env-vars` 		| Map      			| Value of the same input parameter|
+| `:host` 	 		| String     | The host for the Docker Container|
+| `:network` 	 		| Map               | The network configuration of the Container, if provided|
+
+#### Example:
+
+```clojure
+;; PostgreSQL container needs a separate library! This is not included.
+(create {:container (org.testcontainers.containers.PostgreSQLContainer)
+         :exposed-ports [80]
+         :env-vars {"MAGIC_NUMBER" "42"}
+         :command ["/bin/sh" 
+                   "-c" 
+                   "while true; do echo \"$MAGIC_NUMBER\" | nc -l -p 80; done"]})
+```
+
+### create-from-docker-file
+Creates a testcontainer from a Dockerfile
+
+#### Config parameters:
+
+| Key      	| Type          		| Description  |
+| ------------- 		|:-------------		| :-----|
+| `:docker-file`    	| String, mandatory			| String containing a path to a Dockerfile |
+| `:exposed-ports` 	| Vector with ints, mandatory  | All ports which should be exposed and mapped to a local port |
+| `:env-vars` 		| Map      			| A map with environment variables|
+| `:command`  		| Vector with strings     | The start command of the container|
+| `:network`			 |						| A map containing the configuration of a Docker Network (see: `init-network`)|
+| `:network-aliases` | Map					| A list of alias names for the container on the network |
+#### Result: 
+
+| Key      	| Type          		| Description  |
+| ------------- 		|:-------------		| :-----|
+| `:container`    	| `org.testcontainers.containers.Container` 				| The Testcontainers instance, accessible for everything this library doesn't provide (yet) |
+| `:exposed-ports` 	| Vector with ints  | Value of the same input parameter |
+| `:env-vars` 		| Map      			| Value of the same input parameter|
+| `:host` 	 		| String     | The host for the Docker Container|
+| `:network` 	 		| Map               | The network configuration of the Container, if provided|
+
+#### Example:
+
+```clojure
+(create {:docker-file "resources/Dockerfile"
+         :exposed-ports [5432]
+         :env-vars {"MAGIC_NUMBER" "42"}
          :command ["/bin/sh" 
                    "-c" 
                    "while true; do echo \"$MAGIC_NUMBER\" | nc -l -p 80; done"]})
@@ -263,6 +338,40 @@ Executes a command in the running container, and returns the result
 ```clojure
 (execute-command! container ["tail" "/opt/test.sql"])
 ```
+
+### init-network
+Creates a network. The optional map accepts config values for enabling ipv6 and setting the driver
+
+
+#### Config parameters:
+
+| Key      	| Type          		| Description  |
+| ------------- 		|:-------------		| :-----|
+| `:ipv6`| boolean | Should the network enable IPv6? |
+| `:driver`| String | The network driver used by Docker, e.g. `bridge` or `host`
+
+
+
+#### Result: 
+| Key      			| Type          		| Description  |
+| ------------- 		|:-------------		| :-----|
+| `:network`		| `org.testcontainers.containers.Network` 	 				| The instance of the network |
+| `:id`			| String 				| The identifier of the network |
+| `:name`			| String 				| The name of the network |
+| `:ipv6`			| boolean 				| Does the network enable IPv6? |
+| `:driver`			| String 				| The network driver used |
+
+#### Example:
+
+```clojure
+;;Create with config
+(init-network {:ipv6 false
+               :driver "overlay")
+
+;;Create with default config               
+(init-network)   
+```
+
 
 
 
