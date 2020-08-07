@@ -1,10 +1,10 @@
 (ns clj-test-containers.core
-  (:require [clojure.java.io :as io])
+  (:require [clojure.spec.alpha :as s])
   (:import [org.testcontainers.containers GenericContainer]
            [org.testcontainers.utility MountableFile]
            [org.testcontainers.containers BindMode Network]
            [org.testcontainers.images.builder ImageFromDockerfile]
-           [java.nio.file Path Paths]))
+           [java.nio.file Paths]))
 
 (defn- resolve-bind-mode
   [bind-mode]

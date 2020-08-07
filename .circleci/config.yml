@@ -36,7 +36,7 @@ jobs:
           key: v1-dependencies-{{ checksum "project.clj" }}
 
       # run tests!
-      - run: lein bat-test cloverage
+      - run: lein test
 
       - store_test_results:
           path: target
