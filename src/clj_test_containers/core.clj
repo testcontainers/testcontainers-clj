@@ -1,5 +1,7 @@
 (ns clj-test-containers.core
   (:require
+   [clj-test-containers.spec.container :as csc]
+   [clj-test-containers.spec.core :as cs]
    [clojure.spec.alpha :as s])
   (:import
    (java.nio.file
@@ -18,6 +20,10 @@
   (if (= :read-write bind-mode)
     BindMode/READ_WRITE
     BindMode/READ_ONLY))
+
+(s/fdef init
+        :args (s/cat :init-options ::cs/init-options)
+        :ret ::cs/container)
 
 (defn init
   "Sets the properties for a testcontainer instance"
@@ -41,6 +47,10 @@
    :env-vars (into {} (.getEnvMap container))
    :host (.getHost container)
    :network network})
+
+(s/fdef create
+        :args (s/cat :create-options ::cs/create-options)
+        :ret ::cs/container)
 
 (defn create
   "Creates a generic testcontainer and sets its properties"
@@ -122,26 +132,27 @@
       (dissoc :id)
       (dissoc :mapped-ports)))
 
-(defn- build-network
-  [{:keys [ipv6 driver]}]
-  (let [builder (Network/builder)]
+(s/fdef init-network
+        :args (s/alt :nullary (s/cat)
+                     :unary (s/cat :init-network-options
+                                   ::cs/init-network-options))
+        :ret ::cs/network)
 
-    (when ipv6
-      (.enableIpv6 builder true))
-
-    (when driver
-      (.driver builder driver))
-
-    (let [network (.build builder)]
-      {:network network
-       :id (.getId network)
-       :name (.getName network)
-       :ipv6 (.getEnableIpv6 network)
-       :driver (.getDriver network)})))
-
-(defn init-network
+(defn ^:no-gen init-network
   "Creates a network. The optional map accepts config values for enabling ipv6 and setting the driver"
   ([]
-   (build-network {}))
-  ([options]
-   (build-network options)))
+   (init-network {}))
+  ([{:keys [ipv6 driver]}]
+   (let [builder (Network/builder)]
+     (when ipv6
+       (.enableIpv6 builder true))
+
+     (when driver
+       (.driver builder driver))
+
+     (let [network (.build builder)]
+       {:network network
+        :id (.getId network)
+        :name (.getName network)
+        :ipv6 (.getEnableIpv6 network)
+        :driver (.getDriver network)}))))
