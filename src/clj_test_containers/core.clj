@@ -1,16 +1,26 @@
 (ns clj-test-containers.core
-  (:require [clojure.java.io :as io])
-  (:import [org.testcontainers.containers GenericContainer]
-           [org.testcontainers.utility MountableFile]
-           [org.testcontainers.containers BindMode Network]
-           [org.testcontainers.images.builder ImageFromDockerfile]
-           [java.nio.file Path Paths]))
+  (:require
+    [clojure.java.io :as io])
+  (:import
+    (java.nio.file
+      Path
+      Paths)
+    (org.testcontainers.containers
+      BindMode
+      GenericContainer
+      Network)
+    (org.testcontainers.images.builder
+      ImageFromDockerfile)
+    (org.testcontainers.utility
+      MountableFile)))
+
 
 (defn- resolve-bind-mode
   [bind-mode]
   (if (= :read-write bind-mode)
     BindMode/READ_WRITE
     BindMode/READ_ONLY))
+
 
 (defn init
   "Sets the properties for a testcontainer instance"
@@ -35,12 +45,14 @@
    :host (.getHost container)
    :network network})
 
+
 (defn create
   "Creates a generic testcontainer and sets its properties"
   [{:keys [image-name] :as options}]
   (->> (GenericContainer. image-name)
        (assoc options :container)
        init))
+
 
 (defn create-from-docker-file
   "Creates a testcontainer from a provided Dockerfile"
@@ -49,6 +61,7 @@
        (GenericContainer.)
        (assoc options :container)
        init))
+
 
 (defn map-classpath-resource!
   "Maps a resource in the classpath to the given container path. Should be called before starting the container!"
@@ -59,6 +72,7 @@
                                                                     container-path
                                                                     (resolve-bind-mode mode))))
 
+
 (defn bind-filesystem!
   "Binds a source from the filesystem to the given container path. Should be called before starting the container!"
   [container-config {:keys [host-path container-path mode]}]
@@ -67,6 +81,7 @@
                                          host-path
                                          container-path
                                          (resolve-bind-mode mode))))
+
 
 (defn copy-file-to-container!
   "Copies a file into the running container"
@@ -86,6 +101,7 @@
                                      mountable-file
                                      container-path))))
 
+
 (defn execute-command!
   "Executes a command in the container, and returns the result"
   [container-config command]
@@ -95,6 +111,7 @@
     {:exit-code (.getExitCode result)
      :stdout (.getStdout result)
      :stderr (.getStderr result)}))
+
 
 (defn start!
   "Starts the underlying testcontainer instance and adds new values to the response map, e.g. :id and :first-mapped-port"
@@ -107,6 +124,7 @@
                                    (map (fn [port] [port (.getMappedPort container port)])
                                         (:exposed-ports container-config)))))))
 
+
 (defn stop!
   "Stops the underlying container"
   [container-config]
@@ -118,8 +136,8 @@
 
 (defn- build-network
   [{:keys [ipv6 driver]}]
-  (let [builder (Network/builder)] 
-    
+  (let [builder (Network/builder)]
+
     (when ipv6
       (.enableIpv6 builder true))
 
@@ -127,11 +145,12 @@
       (.driver builder driver))
 
     (let [network (.build builder)]
-      {:network network 
+      {:network network
        :id (.getId network)
        :name (.getName network)
        :ipv6 (.getEnableIpv6 network)
        :driver (.getDriver network)})))
+
 
 (defn init-network
   "Creates a network. The optional map accepts config values for enabling ipv6 and setting the driver"

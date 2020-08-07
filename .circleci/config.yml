@@ -1,14 +1,18 @@
-# Clojure CircleCI 2.0 configuration file
+# Clojure CircleCI 2.1 configuration file
 #
-# Check https://circleci.com/docs/2.0/language-clojure/ for more details
+# Check https://circleci.com/docs/2.0/language-ubuntu/ for more details
 #
-version: 2
-jobs:
-  build:
+version: 2.1
+
+executors:
+  ubuntu:
     machine:
       image: ubuntu-1604:202004-01
-      
     working_directory: ~/repo
+
+jobs:
+  build:
+    executor: ubuntu
 
     environment:
       # Customize the JVM maximum heap limit
@@ -40,3 +44,19 @@ jobs:
 
       - store_test_results:
           path: target
+
+  style:
+    executor: ubuntu
+
+    steps:
+      - checkout
+      - run:
+          name: Install cljstyle
+          environment:
+            CLJSTYLE_VERSION: 0.13.0
+          command: |
+            wget https://github.com/greglook/cljstyle/releases/download/${CLJSTYLE_VERSION}/cljstyle_${CLJSTYLE_VERSION}_linux.tar.gz
+            tar -xzf cljstyle_${CLJSTYLE_VERSION}_linux.tar.gz
+      - run:
+          name: Check style
+          command: "./cljstyle check --report"
