@@ -9,12 +9,19 @@
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.testcontainers/testcontainers "1.14.3"]]
 
-  :aliases {"test" ["run" "-m" "kaocha.runner"]}
+  :aliases {"test" ["run" "-m" "kaocha.runner"]
+            "cljstyle" ["run" "-m" "cljstyle.main"]}
+
+  :plugins [[jainsahab/lein-githooks "1.0.0"]]
 
   :profiles {:dev {:dependencies [[org.testcontainers/postgresql "1.14.3"]
                                   [lambdaisland/kaocha-cloverage "1.0-45"]
                                   [lambdaisland/kaocha "1.0.641"]
-                                  [lambdaisland/kaocha-junit-xml "0.0.76"]]}}
+                                  [lambdaisland/kaocha-junit-xml "0.0.76"]
+                                  [mvxcvi/cljstyle "0.13.0" :exclusions [org.clojure/clojure]]]
+                   :githooks {:auto-install true
+                              :ci-env-variable "CI"
+                              :pre-commit ["script/pre-commit"]}}}
 
   :target-path "target/%s")
 

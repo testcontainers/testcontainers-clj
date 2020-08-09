@@ -1,0 +1,3 @@
+{:file-pattern #"\.(clj[sc]?|edn|cljstyle)$"
+ :list-indent-size 1
+ :padding-lines 1}

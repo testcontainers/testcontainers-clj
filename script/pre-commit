@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+FILES=$(git diff --cached --name-only --diff-filter=ACMR | sed 's| |\\ |g')
+
+if [[ -z "$FILES" ]]; then
+  exit 0
+fi
+
+echo "Fixing Clojure style..."
+
+# Format all selected files
+echo "$FILES" | xargs lein cljstyle fix --report
+
+# Add back the modified/prettified files to staging
+echo "$FILES" | xargs git add
+
+echo "Done!"

@@ -1,10 +1,17 @@
 (ns clj-test-containers.core
-  (:require [clojure.spec.alpha :as s])
-  (:import [org.testcontainers.containers GenericContainer]
-           [org.testcontainers.utility MountableFile]
-           [org.testcontainers.containers BindMode Network]
-           [org.testcontainers.images.builder ImageFromDockerfile]
-           [java.nio.file Paths]))
+  (:require
+   [clojure.spec.alpha :as s])
+  (:import
+   (java.nio.file
+    Paths)
+   (org.testcontainers.containers
+    BindMode
+    GenericContainer
+    Network)
+   (org.testcontainers.images.builder
+    ImageFromDockerfile)
+   (org.testcontainers.utility
+    MountableFile)))
 
 (defn- resolve-bind-mode
   [bind-mode]
@@ -115,11 +122,10 @@
       (dissoc :id)
       (dissoc :mapped-ports)))
 
-
 (defn- build-network
   [{:keys [ipv6 driver]}]
-  (let [builder (Network/builder)] 
-    
+  (let [builder (Network/builder)]
+
     (when ipv6
       (.enableIpv6 builder true))
 
@@ -127,7 +133,7 @@
       (.driver builder driver))
 
     (let [network (.build builder)]
-      {:network network 
+      {:network network
        :id (.getId network)
        :name (.getName network)
        :ipv6 (.getEnableIpv6 network)

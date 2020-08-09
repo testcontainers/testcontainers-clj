@@ -17,10 +17,6 @@ jobs:
     steps:
       - checkout
 
-      - run:
-          name: Install Leiningen
-          command: wget https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein && chmod a+x lein && ./lein
-
       # Download and cache dependencies
       - restore_cache:
           keys:
@@ -28,15 +24,23 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
+      - run:
+          name: Install Leiningen
+          command: wget https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein && chmod a+x lein && lein --version
+
       - run: lein deps
 
       - save_cache:
           paths:
+            - ~/.lein
             - ~/.m2
           key: v1-dependencies-{{ checksum "project.clj" }}
 
       # run tests!
       - run: lein test
+
+      # check style
+      - run: lein cljstyle check --report
 
       - store_test_results:
           path: target

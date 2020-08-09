@@ -372,9 +372,6 @@ Creates a network. The optional map accepts config values for enabling ipv6 and 
 (init-network)   
 ```
 
-
-
-
 ## License
 
 Copyright © 2020 Tim Zöller
