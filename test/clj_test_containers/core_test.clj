@@ -1,13 +1,16 @@
 (ns clj-test-containers.core-test
-  (:require [clojure.test :refer :all]
-            [clj-test-containers.core :refer :all])
-  (:import [org.testcontainers.containers PostgreSQLContainer]))
+  (:require
+   [clj-test-containers.core :refer :all]
+   [clojure.test :refer :all])
+  (:import
+   (org.testcontainers.containers
+    PostgreSQLContainer)))
 
 (deftest create-test
   (testing "Testing basic testcontainer generic image initialisation"
 
     (let [container (create {:image-name "postgres:12.2"
-                             :exposed-ports [5432] 
+                             :exposed-ports [5432]
                              :env-vars {"POSTGRES_PASSWORD" "pw"}})
           initialized-container (start! container)
           stopped-container (stop! container)]
@@ -53,7 +56,7 @@
 
   (testing "Testing mapping of a classpath resource"
     (let [container (-> (create {:image-name "postgres:12.2"
-                                 :exposed-ports [5432] 
+                                 :exposed-ports [5432]
                                  :env-vars {"POSTGRES_PASSWORD" "pw"}})
                         (map-classpath-resource! {:resource-path "test.sql"
                                                   :container-path "/opt/test.sql"
@@ -70,7 +73,7 @@
 
   (testing "Testing mapping of a filesystem-binding"
     (let [container (-> (create {:image-name "postgres:12.2"
-                                 :exposed-ports [5432] 
+                                 :exposed-ports [5432]
                                  :env-vars {"POSTGRES_PASSWORD" "pw"}})
                         (bind-filesystem!  {:host-path "."
                                             :container-path "/opt"
@@ -87,7 +90,7 @@
 
   (testing "Copying a file from the host into the container"
     (let [container (-> (create {:image-name "postgres:12.2"
-                                 :exposed-ports [5432] 
+                                 :exposed-ports [5432]
                                  :env-vars {"POSTGRES_PASSWORD" "pw"}})
                         (copy-file-to-container!  {:path "test.sql"
                                                    :container-path "/opt/test.sql"
@@ -104,7 +107,7 @@
 
   (testing "Copying a file from the classpath into the container"
     (let [container (-> (create {:image-name "postgres:12.2"
-                                 :exposed-ports [5432] 
+                                 :exposed-ports [5432]
                                  :env-vars {"POSTGRES_PASSWORD" "pw"}})
                         (copy-file-to-container!  {:path "test.sql"
                                                    :container-path "/opt/test.sql"
@@ -119,17 +122,16 @@
       (is (nil? (:id stopped-container)))
       (is (nil? (:mapped-ports stopped-container))))))
 
-
 (deftest networking-test
-  
+
   (testing "Putting two containers into the same network and check their communication"
     (let [network (init-network)
           server-container (create {:image-name "alpine:3.5"
                                     :network network
                                     :network-aliases ["foo"]
                                     :command ["/bin/sh"
-                                                       "-c"
-                                                       "while true ; do printf 'HTTP/1.1 200 OK\\n\\nyay' | nc -l -p 8080; done"]})
+                                              "-c"
+                                              "while true ; do printf 'HTTP/1.1 200 OK\\n\\nyay' | nc -l -p 8080; done"]})
           client-container (create {:image-name "alpine:3.5"
                                     :network network
                                     :command ["top"]})
@@ -138,6 +140,6 @@
           response (execute-command! started-client ["wget", "-O", "-", "http://foo:8080"])
           stopped-server (stop! started-server)
           stopped-client (stop! started-client)]
-      
+
       (is (= 0 (:exit-code response)))
       (is (= "yay" (:stdout response))))))

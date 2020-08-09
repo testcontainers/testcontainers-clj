@@ -372,8 +372,10 @@ Creates a network. The optional map accepts config values for enabling ipv6 and 
 (init-network)   
 ```
 
+## Contributing
 
-
+Clone this repository and run `script/setup`. This will install a pre-commit hook that
+runs [cljstyle](https://github.com/greglook/cljstyle).
 
 ## License
 
