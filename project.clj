@@ -14,14 +14,18 @@
 
   :plugins [[jainsahab/lein-githooks "1.0.0"]]
 
-  :profiles {:dev {:dependencies [[org.testcontainers/postgresql "1.14.3"]
-                                  [lambdaisland/kaocha-cloverage "1.0-45"]
+  :profiles {:dev {:dependencies [[expound "0.8.5"]
                                   [lambdaisland/kaocha "1.0.641"]
+                                  [lambdaisland/kaocha-cloverage "1.0-45"]
                                   [lambdaisland/kaocha-junit-xml "0.0.76"]
-                                  [mvxcvi/cljstyle "0.13.0" :exclusions [org.clojure/clojure]]]
+                                  [lambdaisland/kaocha-junit-xml "0.0.76"]
+                                  [mvxcvi/cljstyle "0.13.0" :exclusions [org.clojure/clojure]]
+                                  [org.clojure/test.check "1.1.0"]
+                                  [org.clojure/tools.namespace "1.0.0"]
+                                  [org.testcontainers/postgresql "1.14.3"]]
                    :githooks {:auto-install true
                               :ci-env-variable "CI"
-                              :pre-commit ["script/pre-commit"]}}}
+                              :pre-commit ["script/pre-commit"]}
+                   :source-paths ["dev-src"]}}
 
   :target-path "target/%s")
-
