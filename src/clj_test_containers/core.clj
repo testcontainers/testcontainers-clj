@@ -156,6 +156,4 @@
         :ipv6 (.getEnableIpv6 network)
         :driver (.getDriver network)}))))
 
-(defn ^:deprecated init-network
-  [& args]
-  (apply create-network args))
+(def ^:deprecated init-network create-network)
