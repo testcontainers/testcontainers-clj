@@ -68,7 +68,7 @@ Creates a testcontainers instance from a given Docker label and returns them
 | `:exposed-ports` 	 | Vector with ints, mandatory  | All ports which should be exposed and mapped to a local port |
 | `:env-vars` 		 | Map      			| A map with environment variables|
 | `:command`  		 | Vector with strings     | The start command of the container|
-| `:network`			 |	Map					| A map containing the configuration of a Docker Network (see: `init-network`)|
+| `:network`			 |	Map					| A map containing the configuration of a Docker Network (see: `create-network`)|
 | `:network-aliases` | Map					| A list of alias names for the container on the network |
 
 #### Result: 
@@ -87,7 +87,7 @@ Creates a testcontainers instance from a given Docker label and returns them
 (create {:image-name "alpine:3.2"
          :exposed-ports [80]
          :env-vars {"MAGIC_NUMBER" "42"}
-         :network (init-network)
+         :network (create-network)
          :network-aliases ["api-server"]
          :command ["/bin/sh" 
                    "-c" 
@@ -105,7 +105,7 @@ Initializes a given Testcontainer, which was e.g. provided by a library
 | `:exposed-ports` 	| Vector with ints, mandatory  | All ports which should be exposed and mapped to a local port |
 | `:env-vars` 		| Map      			| A map with environment variables|
 | `:command`  		| Vector with strings     | The start command of the container|
-| `:network`			| Map						| A map containing the configuration of a Docker Network (see: `init-network`)|
+| `:network`			| Map						| A map containing the configuration of a Docker Network (see: `create-network`)|
 | `:network-aliases` | Map					| A list of alias names for the container on the network |
 #### Result: 
 
@@ -140,7 +140,7 @@ Creates a testcontainer from a Dockerfile
 | `:exposed-ports` 	| Vector with ints, mandatory  | All ports which should be exposed and mapped to a local port |
 | `:env-vars` 		| Map      			| A map with environment variables|
 | `:command`  		| Vector with strings     | The start command of the container|
-| `:network`			| Map						| A map containing the configuration of a Docker Network (see: `init-network`)|
+| `:network`			| Map						| A map containing the configuration of a Docker Network (see: `create-network`)|
 | `:network-aliases` | Map					| A list of alias names for the container on the network |
 #### Result: 
 
@@ -339,7 +339,7 @@ Executes a command in the running container, and returns the result
 (execute-command! container ["tail" "/opt/test.sql"])
 ```
 
-### init-network
+### create-network
 Creates a network. The optional map accepts config values for enabling ipv6 and setting the driver
 
 
@@ -356,7 +356,6 @@ Creates a network. The optional map accepts config values for enabling ipv6 and 
 | Key      			| Type          		| Description  |
 | ------------- 		|:-------------		| :-----|
 | `:network`		| `org.testcontainers.containers.Network` 	 				| The instance of the network |
-| `:id`			| String 				| The identifier of the network |
 | `:name`			| String 				| The name of the network |
 | `:ipv6`			| boolean 				| Does the network enable IPv6? |
 | `:driver`			| String 				| The network driver used |
@@ -365,11 +364,11 @@ Creates a network. The optional map accepts config values for enabling ipv6 and 
 
 ```clojure
 ;;Create with config
-(init-network {:ipv6 false
+(create-network {:ipv6 false
                :driver "overlay")
 
 ;;Create with default config               
-(init-network)   
+(create-network)   
 ```
 
 ## License
