@@ -365,7 +365,7 @@ Creates a network. The optional map accepts config values for enabling ipv6 and 
 ```clojure
 ;;Create with config
 (create-network {:ipv6 false
-               :driver "overlay")
+                 :driver "overlay")
 
 ;;Create with default config               
 (create-network)   
