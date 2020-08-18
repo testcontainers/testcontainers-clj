@@ -6,7 +6,6 @@
 
 (s/def ::network
   (s/nilable (s/keys :req-un [::csn/network
-                              ::csn/id
                               ::csn/name
                               ::csn/ipv6
                               ::csn/driver])))
@@ -34,6 +33,6 @@
                    ::network
                    ::csc/network-aliases]))
 
-(s/def ::init-network-options
+(s/def ::create-network-options
   (s/keys :opt-un [::csn/ipv6
                    ::csn/driver]))

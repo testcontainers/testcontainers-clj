@@ -132,16 +132,16 @@
       (dissoc :id)
       (dissoc :mapped-ports)))
 
-(s/fdef init-network
+(s/fdef create-network
         :args (s/alt :nullary (s/cat)
-                     :unary (s/cat :init-network-options
-                                   ::cs/init-network-options))
+                     :unary (s/cat :create-network-options
+                                   ::cs/create-network-options))
         :ret ::cs/network)
 
-(defn ^:no-gen init-network
+(defn create-network
   "Creates a network. The optional map accepts config values for enabling ipv6 and setting the driver"
   ([]
-   (init-network {}))
+   (create-network {}))
   ([{:keys [ipv6 driver]}]
    (let [builder (Network/builder)]
      (when ipv6
@@ -152,7 +152,8 @@
 
      (let [network (.build builder)]
        {:network network
-        :id (.getId network)
         :name (.getName network)
         :ipv6 (.getEnableIpv6 network)
         :driver (.getDriver network)}))))
+
+(def ^:deprecated init-network create-network)

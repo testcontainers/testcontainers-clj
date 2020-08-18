@@ -123,7 +123,7 @@
 
 (deftest networking-test
   (testing "Putting two containers into the same network and check their communication"
-    (let [network (sut/init-network)
+    (let [network (sut/create-network)
           server-container (sut/create {:image-name "alpine:3.5"
                                         :network network
                                         :network-aliases ["foo"]
