@@ -19,6 +19,20 @@
       (is (nil? (:id stopped-container)))
       (is (nil? (:mapped-ports stopped-container)))))
 
+  (testing "Testing basic testcontainer generic image initialisation with wait for log message"
+    (let [container (sut/create {:image-name "postgres:12.2"
+                                 :exposed-ports [5432]
+                                 :env-vars {"POSTGRES_PASSWORD" "pw"}
+                                 :wait-for {:strategy :log :message "accept connections"}})
+          initialized-container (sut/start! container)
+          stopped-container (sut/stop! container)]
+      (is (some? (:id initialized-container)))
+      (is (some? (:mapped-ports initialized-container)))
+      (is (some? (get (:mapped-ports initialized-container) 5432)))
+      (is (= (:wait-for-log-message initialized-container) ".*accept connections.*\\n"))
+      (is (nil? (:id stopped-container)))
+      (is (nil? (:mapped-ports stopped-container)))))
+
   (testing "Testing basic testcontainer image creation from docker file"
     (let [container (sut/create-from-docker-file {:exposed-ports [80]
                                                   :docker-file "test/resources/Dockerfile"})

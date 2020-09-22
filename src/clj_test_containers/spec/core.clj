@@ -4,6 +4,12 @@
    [clj-test-containers.spec.network :as csn]
    [clojure.spec.alpha :as s]))
 
+(s/def ::wait-for
+  (s/keys :req-un [::csc/strategy]
+          :opt-un [::csc/path
+                   ::csc/message
+                   ::csc/check]))
+
 (s/def ::network
   (s/nilable (s/keys :req-un [::csn/network
                               ::csn/name
@@ -15,7 +21,8 @@
                    ::csc/exposed-ports
                    ::csc/env-vars
                    ::csc/host]
-          :opt-un [::network]))
+          :opt-un [::network
+                   ::wait-for]))
 
 (s/def ::init-options
   (s/keys :req-un [::csc/container]
@@ -23,6 +30,7 @@
                    ::csc/env-vars
                    ::csc/command
                    ::network
+                   ::wait-for
                    ::csc/network-aliases]))
 
 (s/def ::create-options
@@ -31,6 +39,7 @@
                    ::csc/env-vars
                    ::csc/command
                    ::network
+                   ::wait-for
                    ::csc/network-aliases]))
 
 (s/def ::create-network-options

@@ -25,3 +25,23 @@
 
 (s/def ::image-name
   string?)
+
+(s/def ::http
+  keyword?)
+
+(s/def ::health
+  keyword?)
+
+(s/def ::log
+  keyword?)
+
+(s/def ::strategy #{:http :health :log})
+
+(s/def ::path
+  string?)
+
+(s/def ::message
+  string?)
+
+(s/def ::check
+  boolean?)
