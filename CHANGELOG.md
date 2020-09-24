@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [0.3.0] - Upcoming
+### Added
+- [#25](https://github.com/javahippie/clj-test-containers/issues/25): Add support for a container wait stategy
+
+### Changed
+- [#29](https://github.com/javahippie/clj-test-containers/issues/29): init-network should be called create-network!
+
 ## [0.2.0] - 2020-08-05
 ### Added
 - [#2](https://github.com/javahippie/clj-test-containers/issues/2): Enable configuration of networking
