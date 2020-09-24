@@ -10,12 +10,12 @@
     BindMode
     GenericContainer
     Network)
+   (org.testcontainers.containers.wait.strategy
+    Wait)
    (org.testcontainers.images.builder
     ImageFromDockerfile)
    (org.testcontainers.utility
-    MountableFile)
-   (org.testcontainers.containers.wait.strategy
-    Wait)))
+    MountableFile)))
 
 (defn- resolve-bind-mode
   [bind-mode]
