@@ -13,7 +13,9 @@
    (org.testcontainers.images.builder
     ImageFromDockerfile)
    (org.testcontainers.utility
-    MountableFile)))
+    MountableFile)
+   (org.testcontainers.containers.wait.strategy
+    Wait)))
 
 (defn- resolve-bind-mode
   [bind-mode]
@@ -21,13 +23,33 @@
     BindMode/READ_WRITE
     BindMode/READ_ONLY))
 
+(defmulti wait :strategy)
+
+(defmethod wait :http
+  [{:keys [path]} container]
+  (.waitingFor container (Wait/forHttp path))
+  {:wait-for-http path})
+
+(defmethod wait :health
+  [_ container]
+  (.waitingFor container (Wait/forHealthcheck))
+  {:wait-for-healthcheck true})
+
+(defmethod wait :log
+  [{:keys [message]} container]
+  (let [log-message (str ".*" message ".*\\n")]
+    (.waitingFor container (Wait/forLogMessage log-message 1))
+    {:wait-for-log-message log-message}))
+
+(defmethod wait :default [_ _] nil)
+
 (s/fdef init
         :args (s/cat :init-options ::cs/init-options)
         :ret ::cs/container)
 
 (defn init
   "Sets the properties for a testcontainer instance"
-  [{:keys [container exposed-ports env-vars command network network-aliases]}]
+  [{:keys [container exposed-ports env-vars command network network-aliases wait-for]}]
 
   (.setExposedPorts container (map int exposed-ports))
 
@@ -42,11 +64,11 @@
   (when network-aliases
     (.setNetworkAliases container (java.util.ArrayList. network-aliases)))
 
-  {:container container
-   :exposed-ports (vec (.getExposedPorts container))
-   :env-vars (into {} (.getEnvMap container))
-   :host (.getHost container)
-   :network network})
+  (merge {:container container
+          :exposed-ports (vec (.getExposedPorts container))
+          :env-vars (into {} (.getEnvMap container))
+          :host (.getHost container)
+          :network network} (wait wait-for container)))
 
 (s/fdef create
         :args (s/cat :create-options ::cs/create-options)
