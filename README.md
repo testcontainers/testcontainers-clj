@@ -5,7 +5,7 @@
 [![Clojars Project](http://clojars.org/clj-test-containers/latest-version.svg)](http://clojars.org/clj-test-containers)
 
 ## What it is
-This application is supposed to be a lightweight wrapper around the [Testcontainers Java library](https://www.testcontainers.org/). 
+This application is supposed to be a lightweight wrapper around the [Testcontainers Java library](https://www.testcontainers.org/).
 
 ## What it isn't
 This library does not provide tools to include testcontainers in your testing lifecycle. As there are many different test tools with different approaches to testing in the clojure world, handling the lifecycle is up to you.
@@ -51,14 +51,14 @@ If you prefer to use prebuilt containers from the Testcontainers project, you ca
 (:import [org.testcontainers.containers PostgreSQLContainer])
 
 (def container  (-> (tc/init {:container (PostgreSQLContainer. "postgres:12.2")
-	                           :exposed-ports [5432]}) 
+	                           :exposed-ports [5432]})
                     (tc/start!))
 ```
 
 ## Functions and Properties
 
 ### create
-Creates a testcontainers instance from a given Docker label and returns them 
+Creates a testcontainers instance from a given Docker label and returns them
 
 #### Config parameters:
 
@@ -70,8 +70,9 @@ Creates a testcontainers instance from a given Docker label and returns them
 | `:command`  		 | Vector with strings     | The start command of the container|
 | `:network`			 |	Map					| A map containing the configuration of a Docker Network (see: `create-network`)|
 | `:network-aliases` | Map					| A list of alias names for the container on the network |
+| `:wait-for`        | Map                  | A map containing the wait strategy to use and the condition to check for|
 
-#### Result: 
+#### Result:
 
 | Key      	| Type          		| Description  |
 | ------------- 		|:-------------		| :-----|
@@ -80,6 +81,7 @@ Creates a testcontainers instance from a given Docker label and returns them
 | `:env-vars` 		| Map      			| Value of the same input parameter|
 | `:host` 	 		| String            | The host for the Docker Container|
 | `:network` 	 		| Map               | The network configuration of the Container, if provided|
+| `:wait-for`       | Map               | The wait-for configuration of the Container, if provided!
 
 #### Example:
 
@@ -89,8 +91,22 @@ Creates a testcontainers instance from a given Docker label and returns them
          :env-vars {"MAGIC_NUMBER" "42"}
          :network (create-network)
          :network-aliases ["api-server"]
-         :command ["/bin/sh" 
-                   "-c" 
+         :command ["/bin/sh"
+                   "-c"
+                   "while true; do echo \"$MAGIC_NUMBER\" | nc -l -p 80; done"]})
+```
+
+#### Example using wait-for and healthcheck:
+
+```clojure
+(create {:image-name "alpine:3.2"
+         :exposed-ports [80]
+         :env-vars {"MAGIC_NUMBER" "42"}
+         :network (create-network)
+         :network-aliases ["api-server"]
+         :wait-for {:strategy :health}
+         :command ["/bin/sh"
+                   "-c"
                    "while true; do echo \"$MAGIC_NUMBER\" | nc -l -p 80; done"]})
 ```
 
@@ -107,7 +123,8 @@ Initializes a given Testcontainer, which was e.g. provided by a library
 | `:command`  		| Vector with strings     | The start command of the container|
 | `:network`			| Map						| A map containing the configuration of a Docker Network (see: `create-network`)|
 | `:network-aliases` | Map					| A list of alias names for the container on the network |
-#### Result: 
+| `:wait-for`        | Map                  | A map containing the wait strategy to use and the condition to check for|
+#### Result:
 
 | Key      	| Type          		| Description  |
 | ------------- 		|:-------------		| :-----|
@@ -116,6 +133,7 @@ Initializes a given Testcontainer, which was e.g. provided by a library
 | `:env-vars` 		| Map      			| Value of the same input parameter|
 | `:host` 	 		| String     | The host for the Docker Container|
 | `:network` 	 		| Map               | The network configuration of the Container, if provided|
+| `:wait-for`       | Map               | The wait-for configuration of the Container, if provided!
 
 #### Example:
 
@@ -124,8 +142,21 @@ Initializes a given Testcontainer, which was e.g. provided by a library
 (init {:container (org.testcontainers.containers.PostgreSQLContainer)
        :exposed-ports [80]
        :env-vars {"MAGIC_NUMBER" "42"}
-       :command ["/bin/sh" 
-                 "-c" 
+       :command ["/bin/sh"
+                 "-c"
+                 "while true; do echo \"$MAGIC_NUMBER\" | nc -l -p 80; done"]})
+```
+
+#### Example using wait-for and a log message:
+
+```clojure
+;; PostgreSQL container needs a separate library! This is not included.
+(init {:container (org.testcontainers.containers.PostgreSQLContainer)
+       :exposed-ports [80]
+       :env-vars {"MAGIC_NUMBER" "42"}
+       :wait-for {:strategy :log :message "accept connections"}
+       :command ["/bin/sh"
+                 "-c"
                  "while true; do echo \"$MAGIC_NUMBER\" | nc -l -p 80; done"]})
 ```
 
@@ -142,7 +173,8 @@ Creates a testcontainer from a Dockerfile
 | `:command`  		| Vector with strings     | The start command of the container|
 | `:network`			| Map						| A map containing the configuration of a Docker Network (see: `create-network`)|
 | `:network-aliases` | Map					| A list of alias names for the container on the network |
-#### Result: 
+| `:wait-for`        | Map                  | A map containing the wait strategy to use and the condition to check for|
+#### Result:
 
 | Key      	| Type          		| Description  |
 | ------------- 		|:-------------		| :-----|
@@ -151,6 +183,7 @@ Creates a testcontainer from a Dockerfile
 | `:env-vars` 		| Map      			| Value of the same input parameter|
 | `:host` 	 		| String     | The host for the Docker Container|
 | `:network` 	 		| Map               | The network configuration of the Container, if provided|
+| `:wait-for`       | Map               | The wait-for configuration of the Container, if provided!
 
 #### Example:
 
@@ -158,8 +191,8 @@ Creates a testcontainer from a Dockerfile
 (create-from-docker-file {:docker-file "resources/Dockerfile"
                           :exposed-ports [5432]
                           :env-vars {"MAGIC_NUMBER" "42"}
-                          :command ["/bin/sh" 
-                                    "-c" 
+                          :command ["/bin/sh"
+                                    "-c"
                                     "while true; do echo \"$MAGIC_NUMBER\" | nc -l -p 80; done"]})
 ```
 
@@ -175,7 +208,7 @@ Starts the Testcontainer, which was defined by `create`
 | First parameter: | | |
 | `container-config`| Map, mandatory | Return value of the `create` function |
 
-#### Result: 
+#### Result:
 | Key      	| Type          		| Description  |
 | ------------- 		|:-------------		| :-----|
 | `:container`    	| `org.testcontainers.containers.Container` 				| The Testcontainers instance, accessible for everything this library doesn't provide (yet) |
@@ -191,8 +224,8 @@ Starts the Testcontainer, which was defined by `create`
 (def container (create {:image-name "alpine:3.2"
                         :exposed-ports [80]
                         :env-vars {"MAGIC_NUMBER" "42"})
-		            
-(start! container)    
+
+(start! container)
 ```
 
 ---
@@ -208,7 +241,7 @@ Stops the Testcontainer, which was defined by `create`
 | First parameter: | | |
 | `container-config`| Map, mandatory | Return value of the `create` function |
 
-#### Result: 
+#### Result:
 The `container-config`
 
 #### Example:
@@ -217,9 +250,9 @@ The `container-config`
 (def container (create {:image-name "alpine:3.2"
                         :exposed-ports [80]
                         :env-vars {"MAGIC_NUMBER" "42"})
-                        
-(start! container)    
-(stop! container)    
+
+(start! container)
+(stop! container)
 ```
 
 ---
@@ -240,7 +273,7 @@ Maps a resource from your classpath into the containers file system
 | `:mode` 		| Keyword, mandatory      			| `:read-only` or `:read-write` |
 
 
-#### Result: 
+#### Result:
 The `container-config`
 
 #### Example:
@@ -269,7 +302,7 @@ Binds a path from your local filesystem into the Docker container as a volume
 | `:mode` 		| Keyword, mandatory      			| `:read-only` or `:read-write` |
 
 
-#### Result: 
+#### Result:
 The `container-config`
 
 #### Example:
@@ -298,7 +331,7 @@ Copies a file from your filesystem or classpath into the running container
 | `:type` 			| Keyword, mandatory      			| `:classpath-resource` or `:host-path` |
 
 
-#### Result: 
+#### Result:
 The `container-config`
 
 #### Example:
@@ -326,7 +359,7 @@ Executes a command in the running container, and returns the result
 
 
 
-#### Result: 
+#### Result:
 | Key      			| Type          		| Description  |
 | ------------- 		|:-------------		| :-----|
 | `:exit-code`		| int 	 				| Exit code of the executed command |
@@ -352,7 +385,7 @@ Creates a network. The optional map accepts config values for enabling ipv6 and 
 
 
 
-#### Result: 
+#### Result:
 | Key      			| Type          		| Description  |
 | ------------- 		|:-------------		| :-----|
 | `:network`		| `org.testcontainers.containers.Network` 	 				| The instance of the network |
@@ -367,8 +400,8 @@ Creates a network. The optional map accepts config values for enabling ipv6 and 
 (create-network {:ipv6 false
                  :driver "overlay")
 
-;;Create with default config               
-(create-network)   
+;;Create with default config
+(create-network)
 ```
 
 ## License
