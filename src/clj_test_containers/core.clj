@@ -1,6 +1,5 @@
 (ns clj-test-containers.core
   (:require
-   [clj-test-containers.spec.container :as csc]
    [clj-test-containers.spec.core :as cs]
    [clojure.spec.alpha :as s])
   (:import
@@ -23,12 +22,57 @@
     BindMode/READ_WRITE
     BindMode/READ_ONLY))
 
-(defmulti wait :strategy)
+(defmulti wait
+  "Sets a wait strategy to the container.
+   Supports :http, :health and :log as strategies. 
+  
+  ## HTTP Strategy
+  The :http strategy will only accept the container as initialized if it can be accessed 
+  via HTTP. It accepts a path, a port, a vector of status codes, a boolean that specifies 
+  if TLS is enabled, a read timeout in seconds and a map with basic credentials, containing 
+  username and password. Only the path is required, all others are optional. 
+  Example:
+  
+  ```clojure
+  (wait {:strategy :http
+         :port 80
+         :path \"/\"
+         :status-codes [200 201]
+         :tls true
+         :read-timeout 5
+         :basic-credentials {:username \"user\"
+                             :password \"password\"}}
+        container))
+  ```
+  ## Health Strategy
+  TBD
+
+  ## Log Strategy
+  TBD"
+  :strategy)
 
 (defmethod wait :http
-  [{:keys [path]} container]
-  (.waitingFor container (Wait/forHttp path))
-  {:wait-for-http path})
+  [{:keys [path port status-codes tls read-timeout basic-credentials] :as options} container]
+  (let [for-http (Wait/forHttp path)]
+    (when port
+      (.forPort for-http port))
+
+    (doseq [status-code status-codes]
+      (.forStatusCode for-http status-code))
+
+    (when tls
+      (.usingTls for-http))
+
+    (when read-timeout
+      (.withReadTimeout (java.time.Duration/ofSeconds read-timeout)))
+
+    (when basic-credentials
+      (let [{username :username password :password} basic-credentials]
+        (.withBasicCredentials username password)))
+
+    (.waitingFor container for-http)
+
+    {:wait-for-http (dissoc options :strategy)}))
 
 (defmethod wait :health
   [_ container]
