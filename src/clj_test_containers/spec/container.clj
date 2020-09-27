@@ -45,3 +45,6 @@
 
 (s/def ::check
   boolean?)
+
+(s/def ::capture-logs?
+  (s/nilable boolean?))

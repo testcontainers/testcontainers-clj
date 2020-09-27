@@ -22,7 +22,8 @@
                    ::csc/env-vars
                    ::csc/host]
           :opt-un [::network
-                   ::wait-for]))
+                   ::wait-for
+                   ::csc/capture-logs?]))
 
 (s/def ::init-options
   (s/keys :req-un [::csc/container]
@@ -31,6 +32,7 @@
                    ::csc/command
                    ::network
                    ::wait-for
+                   ::csc/capture-logs?
                    ::csc/network-aliases]))
 
 (s/def ::create-options
@@ -40,6 +42,7 @@
                    ::csc/command
                    ::network
                    ::wait-for
+                   ::csc/capture-logs?
                    ::csc/network-aliases]))
 
 (s/def ::create-network-options

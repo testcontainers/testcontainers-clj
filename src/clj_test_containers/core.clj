@@ -1,7 +1,8 @@
 (ns clj-test-containers.core
   (:require
    [clj-test-containers.spec.core :as cs]
-   [clojure.spec.alpha :as s])
+   [clojure.spec.alpha :as s]
+   [clojure.string])
   (:import
    (java.nio.file
     Paths)
@@ -9,6 +10,8 @@
     BindMode
     GenericContainer
     Network)
+   (org.testcontainers.containers.output
+    ToStringConsumer)
    (org.testcontainers.containers.wait.strategy
     Wait)
    (org.testcontainers.images.builder
@@ -24,15 +27,15 @@
 
 (defmulti wait
   "Sets a wait strategy to the container.
-   Supports :http, :health and :log as strategies. 
-  
+   Supports :http, :health and :log as strategies.
+
   ## HTTP Strategy
-  The :http strategy will only accept the container as initialized if it can be accessed 
-  via HTTP. It accepts a path, a port, a vector of status codes, a boolean that specifies 
-  if TLS is enabled, a read timeout in seconds and a map with basic credentials, containing 
-  username and password. Only the path is required, all others are optional. 
+  The :http strategy will only accept the container as initialized if it can be accessed
+  via HTTP. It accepts a path, a port, a vector of status codes, a boolean that specifies
+  if TLS is enabled, a read timeout in seconds and a map with basic credentials, containing
+  username and password. Only the path is required, all others are optional.
   Example:
-  
+
   ```clojure
   (wait {:strategy :http
          :port 80
@@ -93,7 +96,7 @@
 
 (defn init
   "Sets the properties for a testcontainer instance"
-  [{:keys [container exposed-ports env-vars command network network-aliases wait-for]}]
+  [{:keys [container exposed-ports env-vars command network network-aliases wait-for capture-logs?]}]
 
   (.setExposedPorts container (map int exposed-ports))
 
@@ -112,6 +115,7 @@
           :exposed-ports (vec (.getExposedPorts container))
           :env-vars (into {} (.getEnvMap container))
           :host (.getHost container)
+          :capture-logs? capture-logs?
           :network network} (wait wait-for container)))
 
 (s/fdef create
@@ -179,13 +183,26 @@
      :stdout (.getStdout result)
      :stderr (.getStderr result)}))
 
+(defn dump-logs
+  [container-config]
+  ((:logs container-config)))
+
+(defn capture-logs
+  [container]
+  (let [to-string-consumer (ToStringConsumer.)]
+    (.followOutput container to-string-consumer)
+    (fn []
+      (-> (.toUtf8String to-string-consumer)
+          (clojure.string/replace #"\n+" "\n")))))
+
 (defn start!
   "Starts the underlying testcontainer instance and adds new values to the response map, e.g. :id and :first-mapped-port"
   [container-config]
-  (let [container (:container container-config)]
+  (let [{:keys [container capture-logs?]} container-config]
     (.start container)
     (-> container-config
         (assoc :id (.getContainerId container))
+        (assoc :logs (when capture-logs? (capture-logs container)))
         (assoc :mapped-ports (into {}
                                    (map (fn [port] [port (.getMappedPort container port)])
                                         (:exposed-ports container-config)))))))
