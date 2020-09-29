@@ -200,9 +200,8 @@
   [container-config]
   (let [{:keys [container capture-logs?]} container-config]
     (.start container)
-    (-> container-config
+    (-> (if capture-logs? (assoc container-config :logs (capture-logs container)) container-config)
         (assoc :id (.getContainerId container))
-        (assoc :logs (when capture-logs? (capture-logs container)))
         (assoc :mapped-ports (into {}
                                    (map (fn [port] [port (.getMappedPort container port)])
                                         (:exposed-ports container-config)))))))
@@ -213,6 +212,7 @@
   (.stop (:container container-config))
   (-> container-config
       (dissoc :id)
+      (dissoc :logs)
       (dissoc :mapped-ports)))
 
 (s/fdef create-network
