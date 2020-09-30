@@ -23,9 +23,9 @@
                                   [org.clojure/test.check "1.1.0"]
                                   [org.clojure/tools.namespace "1.0.0"]
                                   [org.testcontainers/postgresql "1.14.3"]]
-                   :githooks {:auto-install true
-                              :ci-env-variable "CI"
-                              :pre-commit ["script/pre-commit"]}
+;                   :githooks {:auto-install true
+;                              :ci-env-variable "CI"
+;                              :pre-commit ["script/pre-commit"]
                    :source-paths ["dev-src"]}}
 
   :target-path "target/%s")

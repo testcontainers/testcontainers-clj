@@ -5,10 +5,14 @@
    [clojure.spec.alpha :as s]))
 
 (s/def ::wait-for
-  (s/keys :req-un [::csc/strategy]
+  (s/keys :req-un [::csc/wait-strategy]
           :opt-un [::csc/path
                    ::csc/message
                    ::csc/check]))
+
+(s/def ::log-to
+  (s/keys :req-un [::csc/log-strategy]
+          :opt-un [::csc/string]))
 
 (s/def ::network
   (s/nilable (s/keys :req-un [::csn/network
@@ -23,7 +27,8 @@
                    ::csc/host]
           :opt-un [::network
                    ::wait-for
-                   ::csc/capture-logs?]))
+                   ::log-to]))
+
 
 (s/def ::init-options
   (s/keys :req-un [::csc/container]
@@ -32,7 +37,7 @@
                    ::csc/command
                    ::network
                    ::wait-for
-                   ::csc/capture-logs?
+                   ::log-to
                    ::csc/network-aliases]))
 
 (s/def ::create-options
@@ -42,7 +47,7 @@
                    ::csc/command
                    ::network
                    ::wait-for
-                   ::csc/capture-logs?
+                   ::log-to
                    ::csc/network-aliases]))
 
 (s/def ::create-network-options

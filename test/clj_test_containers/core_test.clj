@@ -23,7 +23,7 @@
     (let [container (sut/create {:image-name "postgres:12.2"
                                  :exposed-ports [5432]
                                  :env-vars {"POSTGRES_PASSWORD" "pw"}
-                                 :wait-for {:strategy :log :message "accept connections"}})
+                                 :wait-for {:wait-strategy :log :message "accept connections"}})
           initialized-container (sut/start! container)
           stopped-container (sut/stop! container)]
       (is (some? (:id initialized-container)))
