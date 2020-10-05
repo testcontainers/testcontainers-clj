@@ -35,7 +35,9 @@
 (s/def ::log
   keyword?)
 
-(s/def ::strategy #{:http :health :log})
+(s/def ::wait-strategy #{:http :health :log})
+
+(s/def ::log-strategy #{:string})
 
 (s/def ::path
   string?)
@@ -45,3 +47,6 @@
 
 (s/def ::check
   boolean?)
+
+(s/def ::string
+  string?)

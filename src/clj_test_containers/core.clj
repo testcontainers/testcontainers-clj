@@ -1,7 +1,8 @@
 (ns clj-test-containers.core
   (:require
    [clj-test-containers.spec.core :as cs]
-   [clojure.spec.alpha :as s])
+   [clojure.spec.alpha :as s]
+   [clojure.string])
   (:import
    (java.nio.file
     Paths)
@@ -9,6 +10,8 @@
     BindMode
     GenericContainer
     Network)
+   (org.testcontainers.containers.output
+    ToStringConsumer)
    (org.testcontainers.containers.wait.strategy
     Wait)
    (org.testcontainers.images.builder
@@ -24,17 +27,17 @@
 
 (defmulti wait
   "Sets a wait strategy to the container.
-   Supports :http, :health and :log as strategies. 
-  
+   Supports :http, :health and :log as strategies.
+
   ## HTTP Strategy
-  The :http strategy will only accept the container as initialized if it can be accessed 
-  via HTTP. It accepts a path, a port, a vector of status codes, a boolean that specifies 
-  if TLS is enabled, a read timeout in seconds and a map with basic credentials, containing 
-  username and password. Only the path is required, all others are optional. 
+  The :http strategy will only accept the container as initialized if it can be accessed
+  via HTTP. It accepts a path, a port, a vector of status codes, a boolean that specifies
+  if TLS is enabled, a read timeout in seconds and a map with basic credentials, containing
+  username and password. Only the path is required, all others are optional.
   Example:
-  
+
   ```clojure
-  (wait {:strategy :http
+  (wait {:wait-strategy :http
          :port 80
          :path \"/\"
          :status-codes [200 201]
@@ -42,14 +45,29 @@
          :read-timeout 5
          :basic-credentials {:username \"user\"
                              :password \"password\"}}
-        container))
+        container)
   ```
   ## Health Strategy
-  TBD
+  The :health strategy only accepts a true or false value. This enables support for Docker's
+  healthcheck feature, whereby you can directly leverage the healthy state of your container
+  as your wait condition.
+  Example:
+
+  ```clojure
+  (wait {:wait-strategy :health :true} container)
+  ```
 
   ## Log Strategy
-  TBD"
-  :strategy)
+  The :log strategy accepts a message which simply causes the output of your container's log
+  to be used in determining if the container is ready or not. The output is `grepped` against
+  the log message.
+  Example:
+
+  ```clojure
+  (wait {:wait-strategy :log
+         :message \"accept connections\"} container)
+  ```"
+  :wait-strategy)
 
 (defmethod wait :http
   [{:keys [path port status-codes tls read-timeout basic-credentials] :as options} container]
@@ -93,7 +111,7 @@
 
 (defn init
   "Sets the properties for a testcontainer instance"
-  [{:keys [container exposed-ports env-vars command network network-aliases wait-for]}]
+  [{:keys [container exposed-ports env-vars command network network-aliases wait-for] :as init-options}]
 
   (.setExposedPorts container (map int exposed-ports))
 
@@ -108,11 +126,11 @@
   (when network-aliases
     (.setNetworkAliases container (java.util.ArrayList. network-aliases)))
 
-  (merge {:container container
-          :exposed-ports (vec (.getExposedPorts container))
-          :env-vars (into {} (.getEnvMap container))
-          :host (.getHost container)
-          :network network} (wait wait-for container)))
+  (merge init-options {:container container
+                       :exposed-ports (vec (.getExposedPorts container))
+                       :env-vars (into {} (.getEnvMap container))
+                       :host (.getHost container)
+                       :network network} (wait wait-for container)))
 
 (s/fdef create
         :args (s/cat :create-options ::cs/create-options)
@@ -179,16 +197,58 @@
      :stdout (.getStdout result)
      :stderr (.getStderr result)}))
 
+(defmulti log
+  "Sets a log strategy on the container as a means of accessing the container logs.
+   It currently only supports a :string as the strategy to use.
+
+   ## String Strategy
+   The :string strategy sets up a function in the returned map, under the `string-log`
+   key. This function enables the dumping of the logs when passed to the `dump-logs`
+   function.
+   Example:
+
+   ```clojure
+   {:log-strategy :string}
+   ```
+
+   Then, later in your program, you can access the logs thus:
+
+   ```clojure
+   (def container-config (tc/start! container))
+   (tc/dump-logs container-config)
+   ```
+   "
+  :log-strategy)
+
+(defmethod log :string
+  [_ container]
+  (let [to-string-consumer (ToStringConsumer.)]
+    (.followOutput container to-string-consumer)
+    {:string-log (fn []
+                   (-> (.toUtf8String to-string-consumer)
+                       (clojure.string/replace #"\n+" "\n")))}))
+
+(defmethod log :slf4j [_ _] nil)
+
+(defmethod log :default [_ _] nil)
+
+(defn dump-logs
+  "Dumps the logs found by invoking the function on the :string-log key"
+  [container-config]
+  ((:string-log container-config)))
+
 (defn start!
   "Starts the underlying testcontainer instance and adds new values to the response map, e.g. :id and :first-mapped-port"
   [container-config]
-  (let [container (:container container-config)]
+  (let [{:keys [container log-to]} container-config]
     (.start container)
-    (-> container-config
-        (assoc :id (.getContainerId container))
-        (assoc :mapped-ports (into {}
-                                   (map (fn [port] [port (.getMappedPort container port)])
-                                        (:exposed-ports container-config)))))))
+    (-> (merge container-config
+               {:id (.getContainerId container)
+                :mapped-ports (into {}
+                                    (map (fn [port] [port (.getMappedPort container port)])
+                                         (:exposed-ports container-config)))}
+               (log log-to container))
+        (dissoc :log-to))))
 
 (defn stop!
   "Stops the underlying container"
@@ -196,6 +256,7 @@
   (.stop (:container container-config))
   (-> container-config
       (dissoc :id)
+      (dissoc :string-log)
       (dissoc :mapped-ports)))
 
 (s/fdef create-network
