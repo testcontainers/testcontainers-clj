@@ -1,4 +1,4 @@
-(defproject clj-test-containers "0.3.0-SNAPSHOT"
+(defproject clj-test-containers "0.4.0-SNAPSHOT"
   :description "A lightweight, unofficial wrapper around the Testcontainers Java library"
 
   :url "https://github.com/javahippie/clj-test-containers"
@@ -7,7 +7,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
   :dependencies [[org.clojure/clojure "1.10.1"]
-                 [org.testcontainers/testcontainers "1.14.3"]]
+                 [org.testcontainers/testcontainers "1.15.0-rc2"]]
 
   :aliases {"test" ["run" "-m" "kaocha.runner"]
             "cljstyle" ["run" "-m" "cljstyle.main"]}
