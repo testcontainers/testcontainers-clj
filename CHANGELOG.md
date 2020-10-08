@@ -1,13 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [0.4.0] - Upcoming
-### Changed
-- [#35](https://github.com/javahippie/clj-test-containers/issues/35): Add support for docker version 2.4.0 - upgrading testcontainers-java version
-
 ## [0.3.0] - Upcoming
 ### Added
 - [#25](https://github.com/javahippie/clj-test-containers/issues/25): Add support for a container wait stategy
+- [#35](https://github.com/javahippie/clj-test-containers/issues/35): Add support for docker version 2.4.0 - upgrading testcontainers-java version
 
 ### Changed
 - [#29](https://github.com/javahippie/clj-test-containers/issues/29): init-network should be called create-network!
