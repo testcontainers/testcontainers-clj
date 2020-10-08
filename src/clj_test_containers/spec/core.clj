@@ -29,7 +29,6 @@
                    ::wait-for
                    ::log-to]))
 
-
 (s/def ::init-options
   (s/keys :req-un [::csc/container]
           :opt-un [::csc/exposed-ports
