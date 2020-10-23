@@ -27,15 +27,6 @@
       (Thread/sleep 500)
       (is (includes? (sut/dump-logs initialized-container) "database system is ready to accept connections"))))
 
-  (comment
-  (def cnt (sut/create {:image-name "postgres:12.2"
-                                 :exposed-ports [5432]
-                                 :env-vars {"POSTGRES_PASSWORD" "pw"}
-                                 :wait-for {:wait-strategy :log :message "accept connections"}
-                                 :log-to {:log-strategy :string}}))
-  (def cnt (sut/start! cnt))
-  (sut/dump-logs cnt))
-
   (testing "Testing basic testcontainer generic image initialisation with wait for log message"
     (let [container (sut/create {:image-name "postgres:12.2"
                                  :exposed-ports [5432]

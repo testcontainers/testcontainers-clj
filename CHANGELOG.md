@@ -1,10 +1,19 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [0.3.0] - Upcoming
+## [0.4.0] - Upcoming
+
+## [0.3.0] - 2020-10-23
 ### Added
 - [#25](https://github.com/javahippie/clj-test-containers/issues/25): Add support for a container wait stategy
 - [#35](https://github.com/javahippie/clj-test-containers/issues/35): Add support for docker version 2.4.0 - upgrading testcontainers-java version
+- [#27](https://github.com/javahippie/clj-test-containers/issues/27): Add support for accessing container logs
+- [#38](https://github.com/javahippie/clj-test-containers/pull/38): Add type hints to silence reflection warnings
+- [#33](https://github.com/javahippie/clj-test-containers/pull/33): Add more options to the HTTP wait strategy
+- [#28](https://github.com/javahippie/clj-test-containers/pull/28): Link to the java lib
+- [#23](https://github.com/javahippie/clj-test-containers/pull/23): Configure clojure.spec, spec out a few functions
+- [#24](https://github.com/javahippie/clj-test-containers/pull/24): cljstyle redux, with pre-commit hook
+- [#21](https://github.com/javahippie/clj-test-containers/pull/21): Install and configure cljstyle
 
 ### Changed
 - [#29](https://github.com/javahippie/clj-test-containers/issues/29): init-network should be called create-network!

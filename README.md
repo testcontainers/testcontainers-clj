@@ -62,26 +62,27 @@ Creates a testcontainers instance from a given Docker label and returns them
 
 #### Config parameters:
 
-| Key      	| Type          		| Description  |
-| ------------- 		|:-------------		| :-----|
-| `:image-name`    	 | String, mandatory				| The name and label of an image, e.g. `postgres:12.2` |
-| `:exposed-ports` 	 | Vector with ints, mandatory  | All ports which should be exposed and mapped to a local port |
-| `:env-vars` 		 | Map      			| A map with environment variables|
-| `:command`  		 | Vector with strings     | The start command of the container|
-| `:network`			 |	Map					| A map containing the configuration of a Docker Network (see: `create-network`)|
-| `:network-aliases` | Map					| A list of alias names for the container on the network |
-| `:wait-for`        | Map                  | A map containing the wait strategy to use and the condition to check for|
+| Key                | Type                        | Description                                                                    |
+| -------------      | :-------------              | :-----                                                                         |
+| `:image-name`      | String, mandatory           | The name and label of an image, e.g. `postgres:12.2`                           |
+| `:exposed-ports`   | Vector with ints, mandatory | All ports which should be exposed and mapped to a local port                   |
+| `:env-vars`        | Map                         | A map with environment variables                                               |
+| `:command`         | Vector with strings         | The start command of the container                                             |
+| `:network`         | Map                         | A map containing the configuration of a Docker Network (see: `create-network`) |
+| `:network-aliases` | Map                         | A list of alias names for the container on the network                         |
+| `:wait-for`        | Map                         | A map containing the wait strategy to use and the condition to check for       |
+| `:log-to`          | Map                         | A map containing the log strategy to use, e.g. {:log-strategy string}          |
 
 #### Result:
 
-| Key      	| Type          		| Description  |
-| ------------- 		|:-------------		| :-----|
-| `:container`    	| `org.testcontainers.containers.Container` 				| The Testcontainers instance, accessible for everything this library doesn't provide (yet) |
-| `:exposed-ports` 	| Vector with ints  | Value of the same input parameter |
-| `:env-vars` 		| Map      			| Value of the same input parameter|
-| `:host` 	 		| String            | The host for the Docker Container|
-| `:network` 	 		| Map               | The network configuration of the Container, if provided|
-| `:wait-for`       | Map               | The wait-for configuration of the Container, if provided!
+| Key              | Type                                      | Description                                                                               |
+| -------------    | :-------------                            | :-----                                                                                    |
+| `:container`     | `org.testcontainers.containers.Container` | The Testcontainers instance, accessible for everything this library doesn't provide (yet) |
+| `:exposed-ports` | Vector with ints                          | Value of the same input parameter                                                         |
+| `:env-vars`      | Map                                       | Value of the same input parameter                                                         |
+| `:host`          | String                                    | The host for the Docker Container                                                         |
+| `:network`       | Map                                       | The network configuration of the Container, if provided                                   |
+| `:wait-for`      | Map                                       | The wait-for configuration of the Container, if provided!                                 |
 
 #### Example:
 
@@ -115,25 +116,27 @@ Initializes a given Testcontainer, which was e.g. provided by a library
 
 #### Config parameters:
 
-| Key      	| Type          		| Description  |
-| ------------- 		|:-------------		| :-----|
-| `:container`    	| `org.testcontainers.containers.GenericContainer`, mandatory			| The name and label of an image, e.g. `postgres:12.2` |
-| `:exposed-ports` 	| Vector with ints, mandatory  | All ports which should be exposed and mapped to a local port |
-| `:env-vars` 		| Map      			| A map with environment variables|
-| `:command`  		| Vector with strings     | The start command of the container|
-| `:network`			| Map						| A map containing the configuration of a Docker Network (see: `create-network`)|
-| `:network-aliases` | Map					| A list of alias names for the container on the network |
-| `:wait-for`        | Map                  | A map containing the wait strategy to use and the condition to check for|
+| Key                | Type                                                        | Description                                                                    |
+| -------------      | :-------------                                              | :-----                                                                         |
+| `:container`       | `org.testcontainers.containers.GenericContainer`, mandatory | The name and label of an image, e.g. `postgres:12.2`                           |
+| `:exposed-ports`   | Vector with ints, mandatory                                 | All ports which should be exposed and mapped to a local port                   |
+| `:env-vars`        | Map                                                         | A map with environment variables                                               |
+| `:command`         | Vector with strings                                         | The start command of the container                                             |
+| `:network`         | Map                                                         | A map containing the configuration of a Docker Network (see: `create-network`) |
+| `:network-aliases` | Map                                                         | A list of alias names for the container on the network                         |
+| `:wait-for`        | Map                                                         | A map containing the wait strategy to use and the condition to check for       |
+| `:log-to`          | Map                                                         | A map containing the log strategy to use, e.g. {:log-strategy string}          |
+|                    |                                                             |                                                                                |
 #### Result:
 
-| Key      	| Type          		| Description  |
-| ------------- 		|:-------------		| :-----|
-| `:container`    	| `org.testcontainers.containers.Container` 				| The Testcontainers instance, accessible for everything this library doesn't provide (yet) |
-| `:exposed-ports` 	| Vector with ints  | Value of the same input parameter |
-| `:env-vars` 		| Map      			| Value of the same input parameter|
-| `:host` 	 		| String     | The host for the Docker Container|
-| `:network` 	 		| Map               | The network configuration of the Container, if provided|
-| `:wait-for`       | Map               | The wait-for configuration of the Container, if provided!
+| Key              | Type                                      | Description                                                                               |
+| -------------    | :-------------                            | :-----                                                                                    |
+| `:container`     | `org.testcontainers.containers.Container` | The Testcontainers instance, accessible for everything this library doesn't provide (yet) |
+| `:exposed-ports` | Vector with ints                          | Value of the same input parameter                                                         |
+| `:env-vars`      | Map                                       | Value of the same input parameter                                                         |
+| `:host`          | String                                    | The host for the Docker Container                                                         |
+| `:network`       | Map                                       | The network configuration of the Container, if provided                                   |
+| `:wait-for`      | Map                                       | The wait-for configuration of the Container, if provided!                                 |
 
 #### Example:
 
@@ -165,25 +168,27 @@ Creates a testcontainer from a Dockerfile
 
 #### Config parameters:
 
-| Key      	| Type          		| Description  |
-| ------------- 		|:-------------		| :-----|
-| `:docker-file`    	| String, mandatory			| String containing a path to a Dockerfile |
-| `:exposed-ports` 	| Vector with ints, mandatory  | All ports which should be exposed and mapped to a local port |
-| `:env-vars` 		| Map      			| A map with environment variables|
-| `:command`  		| Vector with strings     | The start command of the container|
-| `:network`			| Map						| A map containing the configuration of a Docker Network (see: `create-network`)|
-| `:network-aliases` | Map					| A list of alias names for the container on the network |
-| `:wait-for`        | Map                  | A map containing the wait strategy to use and the condition to check for|
+| Key                | Type                        | Description                                                                    |
+| -------------      | :-------------              | :-----                                                                         |
+| `:docker-file`     | String, mandatory           | String containing a path to a Dockerfile                                       |
+| `:exposed-ports`   | Vector with ints, mandatory | All ports which should be exposed and mapped to a local port                   |
+| `:env-vars`        | Map                         | A map with environment variables                                               |
+| `:command`         | Vector with strings         | The start command of the container                                             |
+| `:network`         | Map                         | A map containing the configuration of a Docker Network (see: `create-network`) |
+| `:network-aliases` | Map                         | A list of alias names for the container on the network                         |
+| `:wait-for`        | Map                         | A map containing the wait strategy to use and the condition to check for       |
+| `:log-to`          | Map                         | A map containing the log strategy to use, e.g. {:log-strategy string}          |
+|                    |                             |                                                                                |
 #### Result:
 
-| Key      	| Type          		| Description  |
-| ------------- 		|:-------------		| :-----|
-| `:container`    	| `org.testcontainers.containers.Container` 				| The Testcontainers instance, accessible for everything this library doesn't provide (yet) |
-| `:exposed-ports` 	| Vector with ints  | Value of the same input parameter |
-| `:env-vars` 		| Map      			| Value of the same input parameter|
-| `:host` 	 		| String     | The host for the Docker Container|
-| `:network` 	 		| Map               | The network configuration of the Container, if provided|
-| `:wait-for`       | Map               | The wait-for configuration of the Container, if provided!
+| Key              | Type                                      | Description                                                                               |
+| -------------    | :-------------                            | :-----                                                                                    |
+| `:container`     | `org.testcontainers.containers.Container` | The Testcontainers instance, accessible for everything this library doesn't provide (yet) |
+| `:exposed-ports` | Vector with ints                          | Value of the same input parameter                                                         |
+| `:env-vars`      | Map                                       | Value of the same input parameter                                                         |
+| `:host`          | String                                    | The host for the Docker Container                                                         |
+| `:network`       | Map                                       | The network configuration of the Container, if provided                                   |
+| `:wait-for`      | Map                                       | The wait-for configuration of the Container, if provided!                                 |
 
 #### Example:
 
@@ -203,20 +208,21 @@ Starts the Testcontainer, which was defined by `create`
 
 #### Config parameters:
 
-| Key      	| Type          		| Description  |
-| ------------- 		|:-------------		| :-----|
-| First parameter: | | |
-| `container-config`| Map, mandatory | Return value of the `create` function |
+| Key                | Type           | Description                           |
+| -------------      | :------------- | :-----                                |
+| First parameter:   |                |                                       |
+| `container-config` | Map, mandatory | Return value of the `create` function |
+|                    |                |                                       |
 
 #### Result:
-| Key      	| Type          		| Description  |
-| ------------- 		|:-------------		| :-----|
-| `:container`    	| `org.testcontainers.containers.Container` 				| The Testcontainers instance, accessible for everything this library doesn't provide (yet) |
-| `:exposed-ports` 	| Vector with ints  | Value of the same input parameter |
-| `:env-vars` 		| Map      			| Value of the same input parameter|
-| `:host` 	 		| String     | The host for the Docker Container|
-| `:id` 				| String | The ID of the started docker container|
-| `:mapped-ports` 	 		| Map     | A map containing the container port as key and the mapped local port as a value|
+| Key              | Type                                      | Description                                                                               |
+| -------------    | :-------------                            | :-----                                                                                    |
+| `:container`     | `org.testcontainers.containers.Container` | The Testcontainers instance, accessible for everything this library doesn't provide (yet) |
+| `:exposed-ports` | Vector with ints                          | Value of the same input parameter                                                         |
+| `:env-vars`      | Map                                       | Value of the same input parameter                                                         |
+| `:host`          | String                                    | The host for the Docker Container                                                         |
+| `:id`            | String                                    | The ID of the started docker container                                                    |
+| `:mapped-ports`  | Map                                       | A map containing the container port as key and the mapped local port as a value           |
 
 #### Example:
 
@@ -236,10 +242,10 @@ Stops the Testcontainer, which was defined by `create`
 
 #### Config parameters:
 
-| Key      	| Type          		| Description  |
-| ------------- 		|:-------------		| :-----|
-| First parameter: | | |
-| `container-config`| Map, mandatory | Return value of the `create` function |
+| Key                | Type           | Description                           |
+| -------------      | :------------- | :-----                                |
+| First parameter:   |                |                                       |
+| `container-config` | Map, mandatory | Return value of the `create` function |
 
 #### Result:
 The `container-config`
@@ -292,14 +298,14 @@ Binds a path from your local filesystem into the Docker container as a volume
 
 #### Config parameters:
 
-| Key      	| Type          		| Description  |
-| ------------- 		|:-------------		| :-----|
-| First parameter: | | |
-| `container-config`| Map, mandatory | Return value of the `create` function |
-| Second parameter: | | |
-| `:host-path`    	| String , mandatory				| Path on your local filesystem |
-| `:container-path` 	| String, mandatory | Path, to which the resource should be mapped |
-| `:mode` 		| Keyword, mandatory      			| `:read-only` or `:read-write` |
+| Key                | Type               | Description                                  |
+| -------------      | :-------------     | :-----                                       |
+| First parameter:   |                    |                                              |
+| `container-config` | Map, mandatory     | Return value of the `create` function        |
+| Second parameter:  |                    |                                              |
+| `:host-path`       | String , mandatory | Path on your local filesystem                |
+| `:container-path`  | String, mandatory  | Path, to which the resource should be mapped |
+| `:mode`            | Keyword, mandatory | `:read-only` or `:read-write`                |
 
 
 #### Result:
@@ -350,21 +356,21 @@ Executes a command in the running container, and returns the result
 
 #### Config parameters:
 
-| Key      	| Type          		| Description  |
-| ------------- 		|:-------------		| :-----|
-| First parameter: | | |
-| `container-config`| Map, mandatory | Return value of the `create` function |
-| Second parameter: | | |
-| `command` 			| Vector with Strings, mandatory | A vector containing the command and its parameters |
+| Key                | Type                           | Description                                        |
+| -------------      | :-------------                 | :-----                                             |
+| First parameter:   |                                |                                                    |
+| `container-config` | Map, mandatory                 | Return value of the `create` function              |
+| Second parameter:  |                                |                                                    |
+| `command`          | Vector with Strings, mandatory | A vector containing the command and its parameters |
 
 
 
 #### Result:
-| Key      			| Type          		| Description  |
-| ------------- 		|:-------------		| :-----|
-| `:exit-code`		| int 	 				| Exit code of the executed command |
-| `:stdout`			| String 				| Content of stdout |
-| `:stdin`			| String 				| Content of stdin |
+| Key           | Type           | Description                       |
+| ------------- | :------------- | :-----                            |
+| `:exit-code`  | int            | Exit code of the executed command |
+| `:stdout`     | String         | Content of stdout                 |
+| `:stdin`      | String         | Content of stdin                  |
 
 #### Example:
 
@@ -378,20 +384,20 @@ Creates a network. The optional map accepts config values for enabling ipv6 and 
 
 #### Config parameters:
 
-| Key      	| Type          		| Description  |
-| ------------- 		|:-------------		| :-----|
-| `:ipv6`| boolean | Should the network enable IPv6? |
-| `:driver`| String | The network driver used by Docker, e.g. `bridge` or `host`
+| Key           | Type           | Description                                                |
+| ------------- | :------------- | :-----                                                     |
+| `:ipv6`       | boolean        | Should the network enable IPv6?                            |
+| `:driver`     | String         | The network driver used by Docker, e.g. `bridge` or `host` |
 
 
 
 #### Result:
-| Key      			| Type          		| Description  |
-| ------------- 		|:-------------		| :-----|
-| `:network`		| `org.testcontainers.containers.Network` 	 				| The instance of the network |
-| `:name`			| String 				| The name of the network |
-| `:ipv6`			| boolean 				| Does the network enable IPv6? |
-| `:driver`			| String 				| The network driver used |
+| Key           | Type                                    | Description                   |
+| ------------- | :-------------                          | :-----                        |
+| `:network`    | `org.testcontainers.containers.Network` | The instance of the network   |
+| `:name`       | String                                  | The name of the network       |
+| `:ipv6`       | boolean                                 | Does the network enable IPv6? |
+| `:driver`     | String                                  | The network driver used       |
 
 #### Example:
 
@@ -404,9 +410,13 @@ Creates a network. The optional map accepts config values for enabling ipv6 and 
 (create-network)
 ```
 
+### dump-logs
+Call on a started container. 
+Provided logging was enabled for a container, returns the given log presentation, e.g. as a string
+    
+| Key                | Type           | Description                                                                      |
+| `container-config` | Map, mandatory | The configuration describing the container for which the log should be retrieved |
+
 ## License
-
-Copyright © 2020 Tim Zöller
-
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
