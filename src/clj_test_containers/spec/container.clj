@@ -8,7 +8,7 @@
 
 (s/def ::container
   (s/with-gen #(instance? GenericContainer %)
-              #(gen/fmap (fn [image-name] (GenericContainer. image-name))
+              #(gen/fmap (fn [^String image-name] (GenericContainer. image-name))
                          (gen/string-alphanumeric))))
 
 (s/def ::exposed-ports

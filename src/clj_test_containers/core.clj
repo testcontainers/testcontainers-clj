@@ -20,20 +20,22 @@
     MountableFile)))
 
 (defn- resolve-bind-mode
-  [bind-mode]
-  (if (= :read-write bind-mode)
-    BindMode/READ_WRITE
-    BindMode/READ_ONLY))
+  (^BindMode [bind-mode]
+   (if (= :read-write bind-mode)
+     BindMode/READ_WRITE
+     BindMode/READ_ONLY)))
 
 (defmulti wait
-  "Sets a wait strategy to the container.
-   Supports :http, :health and :log as strategies.
+  "Sets a wait strategy to the container.  Supports :http, :health and :log as
+  strategies.
 
   ## HTTP Strategy
-  The :http strategy will only accept the container as initialized if it can be accessed
-  via HTTP. It accepts a path, a port, a vector of status codes, a boolean that specifies
-  if TLS is enabled, a read timeout in seconds and a map with basic credentials, containing
-  username and password. Only the path is required, all others are optional.
+  The :http strategy will only accept the container as initialized if it can be
+  accessed via HTTP. It accepts a path, a port, a vector of status codes, a
+  boolean that specifies if TLS is enabled, a read timeout in seconds and a map
+  with basic credentials, containing username and password. Only the path is
+  required, all others are optional.
+
   Example:
 
   ```clojure
@@ -47,10 +49,12 @@
                              :password \"password\"}}
         container)
   ```
+
   ## Health Strategy
-  The :health strategy only accepts a true or false value. This enables support for Docker's
-  healthcheck feature, whereby you can directly leverage the healthy state of your container
-  as your wait condition.
+  The :health strategy only accepts a true or false value. This enables support
+  for Docker's healthcheck feature, whereby you can directly leverage the
+  healthy state of your container as your wait condition.
+
   Example:
 
   ```clojure
@@ -58,9 +62,10 @@
   ```
 
   ## Log Strategy
-  The :log strategy accepts a message which simply causes the output of your container's log
-  to be used in determining if the container is ready or not. The output is `grepped` against
-  the log message.
+  The :log strategy accepts a message which simply causes the output of your
+  container's log to be used in determining if the container is ready or not.
+  The output is `grepped` against the log message.
+
   Example:
 
   ```clojure
@@ -70,7 +75,13 @@
   :wait-strategy)
 
 (defmethod wait :http
-  [{:keys [path port status-codes tls read-timeout basic-credentials] :as options} container]
+  [{:keys [path
+           port
+           status-codes
+           tls
+           read-timeout
+           basic-credentials] :as options}
+   ^GenericContainer container]
   (let [for-http (Wait/forHttp path)]
     (when port
       (.forPort for-http port))
@@ -82,23 +93,23 @@
       (.usingTls for-http))
 
     (when read-timeout
-      (.withReadTimeout (java.time.Duration/ofSeconds read-timeout)))
+      (.withReadTimeout for-http (java.time.Duration/ofSeconds read-timeout)))
 
     (when basic-credentials
       (let [{username :username password :password} basic-credentials]
-        (.withBasicCredentials username password)))
+        (.withBasicCredentials for-http username password)))
 
     (.waitingFor container for-http)
 
     {:wait-for-http (dissoc options :strategy)}))
 
 (defmethod wait :health
-  [_ container]
+  [_ ^GenericContainer container]
   (.waitingFor container (Wait/forHealthcheck))
   {:wait-for-healthcheck true})
 
 (defmethod wait :log
-  [{:keys [message]} container]
+  [{:keys [message]} ^GenericContainer container]
   (let [log-message (str ".*" message ".*\\n")]
     (.waitingFor container (Wait/forLogMessage log-message 1))
     {:wait-for-log-message log-message}))
@@ -111,20 +122,27 @@
 
 (defn init
   "Sets the properties for a testcontainer instance"
-  [{:keys [container exposed-ports env-vars command network network-aliases wait-for] :as init-options}]
+  [{:keys [^GenericContainer container
+           exposed-ports
+           env-vars
+           command
+           network
+           network-aliases
+           wait-for] :as init-options}]
 
   (.setExposedPorts container (map int exposed-ports))
 
-  (run! (fn [[k v]] (.addEnv container k v)) env-vars)
+  (doseq [[k v] env-vars]
+    (.addEnv container k v))
 
   (when command
-    (.setCommand container (into-array String command)))
+    (.setCommand container ^"[Ljava.lang.String;" (into-array String command)))
 
   (when network
     (.setNetwork container (:network network)))
 
   (when network-aliases
-    (.setNetworkAliases container (java.util.ArrayList. network-aliases)))
+    (.setNetworkAliases container network-aliases))
 
   (merge init-options {:container container
                        :exposed-ports (vec (.getExposedPorts container))
@@ -139,89 +157,91 @@
 (defn create
   "Creates a generic testcontainer and sets its properties"
   [{:keys [image-name] :as options}]
-  (->> (GenericContainer. image-name)
+  (->> (GenericContainer. ^String image-name)
        (assoc options :container)
        init))
 
 (defn create-from-docker-file
   "Creates a testcontainer from a provided Dockerfile"
   [{:keys [docker-file] :as options}]
-  (->> (.withDockerfile (ImageFromDockerfile.) (Paths/get "." (into-array [docker-file])))
+  (->> (.withDockerfile (ImageFromDockerfile.)
+                        (Paths/get "." (into-array [docker-file])))
        (GenericContainer.)
        (assoc options :container)
        init))
 
 (defn map-classpath-resource!
-  "Maps a resource in the classpath to the given container path. Should be called before starting the container!"
-  [container-config
-   {:keys [resource-path container-path mode]}]
-  (assoc container-config :container (.withClasspathResourceMapping (:container container-config)
-                                                                    resource-path
-                                                                    container-path
-                                                                    (resolve-bind-mode mode))))
+  "Maps a resource in the classpath to the given container path. Should be
+  called before starting the container!"
+  [{:keys [^GenericContainer container] :as container-config}
+   {:keys [^String resource-path ^String container-path mode]}]
+  (assoc container-config
+         :container
+         (.withClasspathResourceMapping container
+                                        resource-path
+                                        container-path
+                                        (resolve-bind-mode mode))))
 
 (defn bind-filesystem!
-  "Binds a source from the filesystem to the given container path. Should be called before starting the container!"
-  [container-config {:keys [host-path container-path mode]}]
+  "Binds a source from the filesystem to the given container path. Should be
+  called before starting the container!"
+  [{:keys [^GenericContainer container] :as container-config}
+   {:keys [^String host-path ^String container-path mode]}]
   (assoc container-config
-         :container (.withFileSystemBind (:container container-config)
-                                         host-path
-                                         container-path
-                                         (resolve-bind-mode mode))))
+         :container
+         (.withFileSystemBind container
+                              host-path
+                              container-path
+                              (resolve-bind-mode mode))))
 
 (defn copy-file-to-container!
   "Copies a file into the running container"
-  [container-config
-   {:keys [container-path path type]}]
-  (let [mountable-file (cond
-                         (= :classpath-resource type)
-                         (MountableFile/forClasspathResource path)
-
-                         (= :host-path type)
-                         (MountableFile/forHostPath path)
-                         :else
-                         :error)]
+  [{:keys [^GenericContainer container] :as container-config}
+   {:keys [^String container-path ^String path type]}]
+  (let [^MountableFile mountable-file
+        (case type
+          :classpath-resource (MountableFile/forClasspathResource path)
+          :host-path          (MountableFile/forHostPath path))]
     (assoc container-config
            :container
-           (.withCopyFileToContainer (:container container-config)
+           (.withCopyFileToContainer container
                                      mountable-file
                                      container-path))))
 
 (defn execute-command!
   "Executes a command in the container, and returns the result"
-  [container-config command]
-  (let [container (:container container-config)
-        result (.execInContainer container
-                                 (into-array command))]
+  [{:keys [^GenericContainer container]} command]
+  (let [result (.execInContainer container (into-array command))]
     {:exit-code (.getExitCode result)
-     :stdout (.getStdout result)
-     :stderr (.getStderr result)}))
+     :stdout    (.getStdout result)
+     :stderr    (.getStderr result)}))
 
 (defmulti log
-  "Sets a log strategy on the container as a means of accessing the container logs.
-   It currently only supports a :string as the strategy to use.
+  "Sets a log strategy on the container as a means of accessing the container
+  logs.  It currently only supports a :string as the strategy to use.
 
-   ## String Strategy
-   The :string strategy sets up a function in the returned map, under the `string-log`
-   key. This function enables the dumping of the logs when passed to the `dump-logs`
-   function.
-   Example:
+  ## String Strategy
+  The :string strategy sets up a function in the returned map, under the
+  `string-log` key. This function enables the dumping of the logs when passed to
+  the `dump-logs` function.
 
-   ```clojure
-   {:log-strategy :string}
-   ```
+  Example:
 
-   Then, later in your program, you can access the logs thus:
+  ```clojure
+  {:log-strategy :string}
+  ```
 
-   ```clojure
-   (def container-config (tc/start! container))
-   (tc/dump-logs container-config)
-   ```
+  Then, later in your program, you can access the logs thus:
+
+  ```clojure
+  (def container-config (tc/start! container))
+  (tc/dump-logs container-config)
+  ```
    "
   :log-strategy)
 
 (defmethod log :string
-  [_ container]
+  [_ ^GenericContainer container]
   (let [to-string-consumer (ToStringConsumer.)]
     (.followOutput container to-string-consumer)
     {:string-log (fn []
@@ -238,26 +258,26 @@
   ((:string-log container-config)))
 
 (defn start!
-  "Starts the underlying testcontainer instance and adds new values to the response map, e.g. :id and :first-mapped-port"
-  [container-config]
-  (let [{:keys [container log-to]} container-config]
-    (.start container)
-    (-> (merge container-config
-               {:id (.getContainerId container)
-                :mapped-ports (into {}
-                                    (map (fn [port] [port (.getMappedPort container port)])
-                                         (:exposed-ports container-config)))}
+  "Starts the underlying testcontainer instance and adds new values to the
+  response map, e.g. :id and :first-mapped-port"
+  [{:keys [^GenericContainer container
+           log-to
+           exposed-ports] :as container-config}]
+  (.start container)
+  (let [map-port (fn map-port
+                   [port]
+                   [port (.getMappedPort container port)])
+        mapped-ports (into {} (map map-port) exposed-ports)]
+    (-> container-config
+        (merge {:id (.getContainerId container) :mapped-ports mapped-ports}
                (log log-to container))
         (dissoc :log-to))))
 
 (defn stop!
   "Stops the underlying container"
-  [container-config]
-  (.stop (:container container-config))
-  (-> container-config
-      (dissoc :id)
-      (dissoc :string-log)
-      (dissoc :mapped-ports)))
+  [{:keys [^GenericContainer container] :as container-config}]
+  (.stop container)
+  (dissoc container-config :id :string-log :mapped-ports))
 
 (s/fdef create-network
         :args (s/alt :nullary (s/cat)
@@ -266,7 +286,8 @@
         :ret ::cs/network)
 
 (defn create-network
-  "Creates a network. The optional map accepts config values for enabling ipv6 and setting the driver"
+  "Creates a network. The optional map accepts config values for enabling ipv6
+  and setting the driver"
   ([]
    (create-network {}))
   ([{:keys [ipv6 driver]}]

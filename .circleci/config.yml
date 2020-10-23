@@ -36,6 +36,9 @@ jobs:
             - ~/.m2
           key: v1-dependencies-{{ checksum "project.clj" }}
 
+      # check syntax and warn on reflection
+      - run: lein check
+
       # run tests!
       - run: lein test
 
