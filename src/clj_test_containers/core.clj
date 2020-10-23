@@ -244,18 +244,18 @@
   [_ ^GenericContainer container]
   (let [to-string-consumer (ToStringConsumer.)]
     (.followOutput container to-string-consumer)
-    {:string-log (fn []
-                   (-> (.toUtf8String to-string-consumer)
-                       (clojure.string/replace #"\n+" "\n")))}))
+    {:log (fn []
+            (-> (.toUtf8String to-string-consumer)
+                (clojure.string/replace #"\n+" "\n")))}))
 
-(defmethod log :slf4j [_ _] nil)
+(defmethod log :slf4j [_ _] nil) ;; Not yet implemented
 
-(defmethod log :default [_ _] nil)
+(defmethod log :default [_ _] nil) ;; Not yet implemented
 
 (defn dump-logs
   "Dumps the logs found by invoking the function on the :string-log key"
   [container-config]
-  ((:string-log container-config)))
+  ((:log container-config)))
 
 (defn start!
   "Starts the underlying testcontainer instance and adds new values to the
@@ -267,10 +267,10 @@
   (let [map-port (fn map-port
                    [port]
                    [port (.getMappedPort container port)])
-        mapped-ports (into {} (map map-port) exposed-ports)]
+        mapped-ports (into {} (map map-port) exposed-ports)
+        logger (log log-to container)]
     (-> container-config
-        (merge {:id (.getContainerId container) :mapped-ports mapped-ports}
-               (log log-to container))
+        (merge {:id (.getContainerId container) :mapped-ports mapped-ports} logger)
         (dissoc :log-to))))
 
 (defn stop!

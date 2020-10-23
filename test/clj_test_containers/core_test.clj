@@ -1,7 +1,8 @@
 (ns clj-test-containers.core-test
   (:require
    [clj-test-containers.core :as sut]
-   [clojure.test :refer [deftest is testing]])
+   [clojure.test :refer [deftest is testing]]
+   [clojure.string :refer [includes?]])
   (:import
    (org.testcontainers.containers
     PostgreSQLContainer)))
@@ -18,6 +19,22 @@
       (is (some? (get (:mapped-ports initialized-container) 5432)))
       (is (nil? (:id stopped-container)))
       (is (nil? (:mapped-ports stopped-container)))))
+
+  (testing "Testing log access to the container"
+    (let [container (sut/init {:container (PostgreSQLContainer. "postgres:12.2")
+                               :log-to {:log-strategy :string}})
+          initialized-container (sut/start! container)]
+      (Thread/sleep 500)
+      (is (includes? (sut/dump-logs initialized-container) "database system is ready to accept connections"))))
+
+(comment
+  (def cnt (sut/create {:image-name "postgres:12.2"
+                                 :exposed-ports [5432]
+                                 :env-vars {"POSTGRES_PASSWORD" "pw"}
+                                 :wait-for {:wait-strategy :log :message "accept connections"}
+                                 :log-to {:log-strategy :string}}))
+  (def cnt (sut/start! cnt))
+  (sut/dump-logs cnt))
 
   (testing "Testing basic testcontainer generic image initialisation with wait for log message"
     (let [container (sut/create {:image-name "postgres:12.2"
