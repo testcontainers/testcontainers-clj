@@ -1,8 +1,8 @@
 (ns clj-test-containers.core-test
   (:require
    [clj-test-containers.core :as sut]
-   [clojure.test :refer [deftest is testing]]
-   [clojure.string :refer [includes?]])
+   [clojure.string :refer [includes?]]
+   [clojure.test :refer [deftest is testing]])
   (:import
    (org.testcontainers.containers
     PostgreSQLContainer)))
@@ -27,7 +27,7 @@
       (Thread/sleep 500)
       (is (includes? (sut/dump-logs initialized-container) "database system is ready to accept connections"))))
 
-(comment
+  (comment
   (def cnt (sut/create {:image-name "postgres:12.2"
                                  :exposed-ports [5432]
                                  :env-vars {"POSTGRES_PASSWORD" "pw"}
