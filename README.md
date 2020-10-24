@@ -5,7 +5,7 @@
 [![Clojars Project](http://clojars.org/clj-test-containers/latest-version.svg)](http://clojars.org/clj-test-containers)
 
 ## What it is
-This application is supposed to be a lightweight wrapper around the [Testcontainers Java library](https://www.testcontainers.org/).
+This library is a lightweight wrapper around the [Testcontainers Java library](https://www.testcontainers.org/).
 
 ## What it isn't
 This library does not provide tools to include testcontainers in your testing lifecycle. As there are many different test tools with different approaches to testing in the clojure world, handling the lifecycle is up to you.
