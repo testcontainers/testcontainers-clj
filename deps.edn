@@ -1,7 +1,7 @@
 {:paths ["src" "resources"]
 
  :deps {org.clojure/clojure {:mvn/version "1.10.1"}
-        org.testcontainers/testcontainers {:mvn/version "1.14.3"}}
+        org.testcontainers/testcontainers {:mvn/version "1.15.0"}}
 
  :aliases {:dev {:extra-paths "dev-src"}
            :test {:extra-paths ["test" "test/resources"]
