@@ -195,18 +195,24 @@
                               (resolve-bind-mode mode))))
 
 (defn copy-file-to-container!
-  "Copies a file into the running container"
-  [{:keys [^GenericContainer container] :as container-config}
+  "If a container is not yet started, adds a mapping from mountable file to
+  container path that will be copied to the container on startup. If the
+  container is already running, copy the file to the running container."
+  [{:keys [^GenericContainer container id] :as container-config}
    {:keys [^String container-path ^String path type]}]
   (let [^MountableFile mountable-file
         (case type
           :classpath-resource (MountableFile/forClasspathResource path)
           :host-path          (MountableFile/forHostPath path))]
-    (assoc container-config
-           :container
-           (.withCopyFileToContainer container
-                                     mountable-file
-                                     container-path))))
+    (if id
+      (do
+        (.copyFileToContainer container mountable-file container-path)
+        container-config)
+      (assoc container-config
+             :container
+             (.withCopyFileToContainer container
+                                       mountable-file
+                                       container-path)))))
 
 (defn execute-command!
   "Executes a command in the container, and returns the result"

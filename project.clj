@@ -19,7 +19,7 @@
                                   [lambdaisland/kaocha-cloverage "1.0-45"]
                                   [lambdaisland/kaocha-junit-xml "0.0.76"]
                                   [lambdaisland/kaocha-junit-xml "0.0.76"]
-                                  [mvxcvi/cljstyle "0.13.0" :exclusions [org.clojure/clojure]]
+                                  [mvxcvi/cljstyle "0.14.0" :exclusions [org.clojure/clojure]]
                                   [org.clojure/test.check "1.1.0"]
                                   [org.clojure/tools.namespace "1.0.0"]
                                   [org.testcontainers/postgresql "1.15.0-rc2"]]
