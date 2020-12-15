@@ -56,7 +56,7 @@
   healthy state of your container as your wait condition.
 
   Example:
-pr
+
   ```clojure
   (wait {:wait-strategy :health :true} container)
   ```
