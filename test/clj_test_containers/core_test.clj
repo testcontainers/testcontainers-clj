@@ -126,6 +126,7 @@
       (is (nil? (:id stopped-container)))
       (is (nil? (:mapped-ports stopped-container)))))
 
+
   (testing "Copying a file from the classpath into the container"
     (let [container (-> (sut/create {:image-name "postgres:12.2"
                                      :exposed-ports [5432]
@@ -135,6 +136,44 @@
                                                        :type :classpath-resource}))
           initialized-container (sut/start! container)
           file-check (sut/execute-command! initialized-container ["tail" "/opt/test.sql"])
+          stopped-container (sut/stop! container)]
+      (is (some? (:id initialized-container)))
+      (is (some? (:mapped-ports initialized-container)))
+      (is (some? (get (:mapped-ports initialized-container) 5432)))
+      (is (= 0 (:exit-code file-check)))
+      (is (nil? (:id stopped-container)))
+      (is (nil? (:mapped-ports stopped-container)))))
+
+  (testing "Copying a file from the host into a running container"
+    (let [container (sut/create {:image-name "postgres:12.2"
+                                 :exposed-ports [5432]
+                                 :env-vars {"POSTGRES_PASSWORD" "pw"}})
+          initialized-container (sut/start! container)
+          _ (sut/copy-file-to-container! initialized-container
+                                         {:path "test.sql"
+                                          :container-path "/opt/test.sql"
+                                          :type :host-path})
+          file-check (sut/execute-command! initialized-container
+                                           ["tail" "/opt/test.sql"])
+          stopped-container (sut/stop! container)]
+      (is (some? (:id initialized-container)))
+      (is (some? (:mapped-ports initialized-container)))
+      (is (some? (get (:mapped-ports initialized-container) 5432)))
+      (is (= 0 (:exit-code file-check)))
+      (is (nil? (:id stopped-container)))
+      (is (nil? (:mapped-ports stopped-container)))))
+
+  (testing "Copying a file from the classpath into a running container"
+    (let [container (sut/create {:image-name "postgres:12.2"
+                                 :exposed-ports [5432]
+                                 :env-vars {"POSTGRES_PASSWORD" "pw"}})
+          initialized-container (sut/start! container)
+          _ (sut/copy-file-to-container! initialized-container
+                                         {:path "test.sql"
+                                          :container-path "/opt/test.sql"
+                                          :type :classpath-resource})
+          file-check (sut/execute-command! initialized-container
+                                           ["tail" "/opt/test.sql"])
           stopped-container (sut/stop! container)]
       (is (some? (:id initialized-container)))
       (is (some? (:mapped-ports initialized-container)))

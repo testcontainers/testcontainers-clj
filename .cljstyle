@@ -1,3 +1,5 @@
-{:file-pattern #"\.(clj[sc]?|edn|cljstyle)$"
- :list-indent-size 1
- :padding-lines 1}
+{:files {:pattern #"\.(clj[sc]?|edn|cljstyle)$"},
+ :rules
+ {:indentation {:list-indent 1},
+  :blank-lines {:padding-lines 1},
+  :namespaces {:indent-size 1}}}
