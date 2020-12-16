@@ -1,7 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [0.4.0] - Upcoming
+## [0.4.0] - 2020-12-16
+### Added
+- [#43](https://github.com/javahippie/clj-test-containers/issues/43): Provide a way to remove all running testcontainers instances in a REPL session
+
+### Changed
+- [#40](https://github.com/javahippie/clj-test-containers/issues/40): Increase Testcontainers version to 1.15.0 
+- [#47](https://github.com/javahippie/clj-test-containers/issues/47): Increase Testcontainers version to 1.15.1
+- [#44](https://github.com/javahippie/clj-test-containers/pull/44): Use .copyFileToContainer when the container is already started 
 
 ## [0.3.0] - 2020-10-23
 ### Added
