@@ -25,6 +25,9 @@
      BindMode/READ_WRITE
      BindMode/READ_ONLY)))
 
+(defn- reaper-instance []
+  (org.testcontainers.utility.ResourceReaper/instance))
+
 (defmulti wait
   "Sets a wait strategy to the container.  Supports :http, :health and :log as
   strategies.
@@ -274,9 +277,16 @@
                    [port]
                    [port (.getMappedPort container port)])
         mapped-ports (into {} (map map-port) exposed-ports)
+        container-id (.getContainerId container)
+        image-name (.getDockerImageName container)
         logger (log log-to container)]
+    (.registerContainerForCleanup (reaper-instance) 
+                                  container-id 
+                                  image-name)
     (-> container-config
-        (merge {:id (.getContainerId container) :mapped-ports mapped-ports} logger)
+        (merge {:id container-id 
+                :mapped-ports mapped-ports
+                :image-name image-name} logger)
         (dissoc :log-to))))
 
 (defn stop!
@@ -304,10 +314,24 @@
      (when driver
        (.driver builder driver))
 
-     (let [network (.build builder)]
+     (let [network (.build builder)
+           network-name (.getName network)]
+       (.registerNetworkIdForCleanup (reaper-instance) network-name)
        {:network network
-        :name (.getName network)
+        :name network-name
         :ipv6 (.getEnableIpv6 network)
         :driver (.getDriver network)}))))
 
 (def ^:deprecated init-network create-network)
+
+
+(defn perform-cleanup! 
+  "Stops and removes all container instances which were created in the active JVM or REPL session"
+  []
+  (.performCleanup (reaper-instance)))
+
+
+;;; REPL Helpers
+(comment
+  (start! (create {:image-name "postgres:12.1"}))
+  (perform-cleanup!))

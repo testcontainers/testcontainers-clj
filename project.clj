@@ -22,7 +22,8 @@
                                   [mvxcvi/cljstyle "0.14.0" :exclusions [org.clojure/clojure]]
                                   [org.clojure/test.check "1.1.0"]
                                   [org.clojure/tools.namespace "1.0.0"]
-                                  [org.testcontainers/postgresql "1.15.1"]]
+                                  [org.testcontainers/postgresql "1.15.1"]
+                                  [com.fzakaria/slf4j-timbre "0.3.20"]]
                    :source-paths ["dev-src"]}}
 
   :target-path "target/%s")
