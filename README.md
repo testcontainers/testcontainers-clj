@@ -428,7 +428,7 @@ None
 Call on a started container. 
 Provided logging was enabled for a container, returns the given log presentation, e.g. as a string
     
-| Key                | Type           | Description                                                                      |
+| Key                | Type           | Description                                        |
 | `container-config` | Map, mandatory | The configuration describing the container for which the log should be retrieved |
 
 ## License
