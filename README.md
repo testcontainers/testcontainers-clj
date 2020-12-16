@@ -410,6 +410,20 @@ Creates a network. The optional map accepts config values for enabling ipv6 and 
 (create-network)
 ```
 
+### perform-cleanup!
+Stops and removes all containers which were created in the JVM, including the REPL session you are in. This is helpful, if you are exploring functionality with containers in the REPL, and create lots of instances on the fly without stopping them. Testcontainers will remove all containers upon JVM shutdown, but the REPL keeps the JVM alive for a long time.
+
+#### Config parameters: 
+None
+
+#### Result: 
+None
+
+#### Example:
+```clojure
+(perform-cleanup!)
+```
+
 ### dump-logs
 Call on a started container. 
 Provided logging was enabled for a container, returns the given log presentation, e.g. as a string
