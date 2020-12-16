@@ -25,7 +25,8 @@
      BindMode/READ_WRITE
      BindMode/READ_ONLY)))
 
-(defn- reaper-instance []
+(defn- reaper-instance
+  []
   (org.testcontainers.utility.ResourceReaper/instance))
 
 (defmulti wait
@@ -280,11 +281,11 @@
         container-id (.getContainerId container)
         image-name (.getDockerImageName container)
         logger (log log-to container)]
-    (.registerContainerForCleanup (reaper-instance) 
-                                  container-id 
+    (.registerContainerForCleanup (reaper-instance)
+                                  container-id
                                   image-name)
     (-> container-config
-        (merge {:id container-id 
+        (merge {:id container-id
                 :mapped-ports mapped-ports
                 :image-name image-name} logger)
         (dissoc :log-to))))
@@ -324,8 +325,7 @@
 
 (def ^:deprecated init-network create-network)
 
-
-(defn perform-cleanup! 
+(defn perform-cleanup!
   "Stops and removes all container instances which were created in the active JVM or REPL session"
   []
   (.performCleanup (reaper-instance)))
