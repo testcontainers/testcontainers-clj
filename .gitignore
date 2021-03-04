@@ -8,6 +8,7 @@ pom.xml.asc
 /.lein-*
 /.nrepl-history
 /.nrepl-port
+.clj-kondo/
 .hgignore
 .hg/
 .DS_Store
