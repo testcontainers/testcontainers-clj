@@ -1,7 +1,5 @@
 # clj-test-containers
 
-[![javahippie](https://circleci.com/gh/javahippie/clj-test-containers.svg?style=svg)](<LINK>)
-
 [![Clojars Project](http://clojars.org/clj-test-containers/latest-version.svg)](http://clojars.org/clj-test-containers)
 
 ## What it is
