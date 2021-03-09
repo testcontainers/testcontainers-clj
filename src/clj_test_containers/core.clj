@@ -17,7 +17,8 @@
    (org.testcontainers.images.builder
     ImageFromDockerfile)
    (org.testcontainers.utility
-    MountableFile)))
+    MountableFile
+    ResourceReaper)))
 
 (defn- resolve-bind-mode
   (^BindMode [bind-mode]
@@ -27,7 +28,7 @@
 
 (defn- reaper-instance
   []
-  (org.testcontainers.utility.ResourceReaper/instance))
+  (ResourceReaper/instance))
 
 (defmulti wait
   "Sets a wait strategy to the container.  Supports :http, :health and :log as
@@ -278,10 +279,10 @@
                    [port]
                    [port (.getMappedPort container port)])
         mapped-ports (into {} (map map-port) exposed-ports)
-        container-id (.getContainerId container)
-        image-name (.getDockerImageName container)
+        container-id ^String (.getContainerId container)
+        image-name ^String (.getDockerImageName container)
         logger (log log-to container)]
-    (.registerContainerForCleanup (reaper-instance)
+    (.registerContainerForCleanup ^ResourceReaper (reaper-instance)
                                   container-id
                                   image-name)
     (-> container-config
@@ -317,7 +318,7 @@
 
      (let [network (.build builder)
            network-name (.getName network)]
-       (.registerNetworkIdForCleanup (reaper-instance) network-name)
+       (.registerNetworkIdForCleanup ^ResourceReaper (reaper-instance) network-name)
        {:network network
         :name network-name
         :ipv6 (.getEnableIpv6 network)
@@ -328,7 +329,7 @@
 (defn perform-cleanup!
   "Stops and removes all container instances which were created in the active JVM or REPL session"
   []
-  (.performCleanup (reaper-instance)))
+  (.performCleanup ^ResourceReaper (reaper-instance)))
 
 
 ;;; REPL Helpers
