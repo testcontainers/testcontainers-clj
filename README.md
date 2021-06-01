@@ -22,7 +22,7 @@ The library provides a set of functions to interact with the testcontainers. A s
                    (tc/bind-filesystem! {:host-path "/tmp"
                                          :container-path "/opt"
                                          :mode :read-only})
-                   (tc/start!))
+                   (tc/start!)))
 
 (do-database-testing (:host container)
                      (get (:mapped-ports container) 5432))
@@ -39,7 +39,7 @@ If you'd rather create a container from a Dockerfile in your project, it could l
 (def container  (-> (tc/create-from-docker-file {:env-vars {"FOO" "bar"}
                                                  :exposed-ports [80]
                                                  :docker-file "resources/Dockerfile"})
-                    (tc/start!))
+                    (tc/start!)))
 ```
 
 If you prefer to use prebuilt containers from the Testcontainers project, you can do it like this
@@ -50,7 +50,7 @@ If you prefer to use prebuilt containers from the Testcontainers project, you ca
 
 (def container  (-> (tc/init {:container (PostgreSQLContainer. "postgres:12.2")
 	                           :exposed-ports [5432]})
-                    (tc/start!))
+                    (tc/start!)))
 ```
 
 ## Functions and Properties
@@ -227,7 +227,7 @@ Starts the Testcontainer, which was defined by `create`
 ```clojure
 (def container (create {:image-name "alpine:3.2"
                         :exposed-ports [80]
-                        :env-vars {"MAGIC_NUMBER" "42"})
+                        :env-vars {"MAGIC_NUMBER" "42"}}))
 
 (start! container)
 ```
@@ -253,7 +253,7 @@ The `container-config`
 ```clojure
 (def container (create {:image-name "alpine:3.2"
                         :exposed-ports [80]
-                        :env-vars {"MAGIC_NUMBER" "42"})
+                        :env-vars {"MAGIC_NUMBER" "42"}}))
 
 (start! container)
 (stop! container)
@@ -402,7 +402,7 @@ Creates a network. The optional map accepts config values for enabling ipv6 and 
 ```clojure
 ;;Create with config
 (create-network {:ipv6 false
-                 :driver "overlay")
+                 :driver "overlay"})
 
 ;;Create with default config
 (create-network)
