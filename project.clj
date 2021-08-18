@@ -7,7 +7,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
   :dependencies [[org.clojure/clojure "1.10.1"]
-                 [org.testcontainers/testcontainers "1.15.2"]]
+                 [org.testcontainers/testcontainers "1.16.0"]]
 
   :aliases {"test" ["run" "-m" "kaocha.runner"]
             "cljstyle" ["run" "-m" "cljstyle.main"]}
@@ -21,7 +21,7 @@
                                   [mvxcvi/cljstyle "0.14.0" :exclusions [org.clojure/clojure]]
                                   [org.clojure/test.check "1.1.0"]
                                   [org.clojure/tools.namespace "1.0.0"]
-                                  [org.testcontainers/postgresql "1.15.2"]
+                                  [org.testcontainers/postgresql "1.16.0"]
                                   [com.fzakaria/slf4j-timbre "0.3.20"]]
                    :source-paths ["dev-src"]}}
 
