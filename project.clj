@@ -1,4 +1,4 @@
-(defproject clj-test-containers "0.5.0-SNAPSHOT"
+(defproject clj-test-containers "0.5.0"
   :description "A lightweight, unofficial wrapper around the Testcontainers Java library"
 
   :url "https://github.com/javahippie/clj-test-containers"

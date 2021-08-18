@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [0.5.0] - 2021-08-18
+### Changed
+- [#49](https://github.com/javahippie/clj-test-containers/issues/49): Updated to latest Testcontainers version
+- [#50](https://github.com/javahippie/clj-test-containers/issues/50): supress Reflection warnings
+- [#52](https://github.com/javahippie/clj-test-containers/pull/52): Fix unbalanced parens and braces
+
 ## [0.4.0] - 2020-12-16
 ### Added
 - [#43](https://github.com/javahippie/clj-test-containers/issues/43): Provide a way to remove all running testcontainers instances in a REPL session
