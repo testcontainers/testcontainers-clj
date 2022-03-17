@@ -6,23 +6,23 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
-  :dependencies [[org.clojure/clojure "1.10.1"]
-                 [org.testcontainers/testcontainers "1.16.0"]]
+  :dependencies [[org.clojure/clojure "1.10.3"]
+                 [org.testcontainers/testcontainers "1.16.3"]]
 
   :aliases {"test" ["run" "-m" "kaocha.runner"]
             "cljstyle" ["run" "-m" "cljstyle.main"]}
 
   :plugins [[jainsahab/lein-githooks "1.0.0"]]
 
-  :profiles {:dev {:dependencies [[expound "0.8.5"]
-                                  [lambdaisland/kaocha "1.0.641"]
-                                  [lambdaisland/kaocha-cloverage "1.0-45"]
+  :profiles {:dev {:dependencies [[expound "0.9.0"]
+                                  [lambdaisland/kaocha "1.63.998"]
+                                  [lambdaisland/kaocha-cloverage "1.0.75"]
                                   [lambdaisland/kaocha-junit-xml "0.0.76"]
-                                  [mvxcvi/cljstyle "0.14.0" :exclusions [org.clojure/clojure]]
-                                  [org.clojure/test.check "1.1.0"]
-                                  [org.clojure/tools.namespace "1.0.0"]
-                                  [org.testcontainers/postgresql "1.16.0"]
-                                  [com.fzakaria/slf4j-timbre "0.3.20"]]
+                                  [mvxcvi/cljstyle "0.15.0" :exclusions [org.clojure/clojure]]
+                                  [org.clojure/test.check "1.1.1"]
+                                  [org.clojure/tools.namespace "1.2.0"]
+                                  [org.testcontainers/postgresql "1.16.3"]
+                                  [com.fzakaria/slf4j-timbre "0.3.21"]]
                    :source-paths ["dev-src"]}}
 
   :target-path "target/%s")
