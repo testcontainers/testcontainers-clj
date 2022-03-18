@@ -1,24 +1,25 @@
 (ns clj-test-containers.core
   (:require
-   [clj-test-containers.spec.core :as cs]
-   [clojure.spec.alpha :as s]
-   [clojure.string])
+    [clj-test-containers.spec.core :as cs]
+    [clojure.spec.alpha :as s]
+    [clojure.string])
   (:import
-   (java.nio.file
-    Paths)
-   (org.testcontainers.containers
-    BindMode
-    GenericContainer
-    Network)
-   (org.testcontainers.containers.output
-    ToStringConsumer)
-   (org.testcontainers.containers.wait.strategy
-    Wait)
-   (org.testcontainers.images.builder
-    ImageFromDockerfile)
-   (org.testcontainers.utility
-    MountableFile
-    ResourceReaper)))
+    (java.nio.file
+      Paths)
+    (org.testcontainers.containers
+      BindMode
+      GenericContainer
+      Network)
+    (org.testcontainers.containers.output
+      ToStringConsumer)
+    (org.testcontainers.containers.wait.strategy
+      Wait)
+    (org.testcontainers.images.builder
+      ImageFromDockerfile)
+    (org.testcontainers.utility
+      MountableFile
+      ResourceReaper)
+    (java.time Duration)))
 
 (defn- resolve-bind-mode
   (^BindMode [bind-mode]
@@ -31,65 +32,71 @@
   (ResourceReaper/instance))
 
 (defmulti wait
-  "Sets a wait strategy to the container.  Supports :http, :health and :log as
-  strategies.
+          "Sets a wait strategy to the container.  Supports :http, :health and :log as
+          strategies.
 
-  ## HTTP Strategy
-  The :http strategy will only accept the container as initialized if it can be
-  accessed via HTTP. It accepts a path, a port, a vector of status codes, a
-  boolean that specifies if TLS is enabled, a read timeout in seconds and a map
-  with basic credentials, containing username and password. Only the path is
-  required, all others are optional.
+          ## HTTP Strategy
+          The :http strategy will only accept the container as initialized if it can be
+          accessed via HTTP. It accepts a path, a port, a vector of status codes, a
+          boolean that specifies if TLS is enabled, a read timeout in seconds and a map
+          with basic credentials, containing username and password. Only the path is
+          required, all others are optional.
 
-  Example:
+          Example:
 
-  ```clojure
-  (wait {:wait-strategy :http
-         :port 80
-         :path \"/\"
-         :status-codes [200 201]
-         :tls true
-         :read-timeout 5
-         :basic-credentials {:username \"user\"
-                             :password \"password\"}}
-        container)
-  ```
+          ```clojure
+          (wait {:wait-strategy :http
+                 :port 80
+                 :path \"/\"
+                 :status-codes [200 201]
+                 :tls true
+                 :read-timeout 5
+                 :basic-credentials {:username \"user\"
+                                     :password \"password\"}}
+                container)
+          ```
 
-  ## Health Strategy
-  The :health strategy only accepts a true or false value. This enables support
-  for Docker's healthcheck feature, whereby you can directly leverage the
-  healthy state of your container as your wait condition.
+          ## Health Strategy
+          The :health strategy only accepts a true or false value. This enables support
+          for Docker's healthcheck feature, whereby you can directly leverage the
+          healthy state of your container as your wait condition.
 
-  Example:
+          Example:
 
-  ```clojure
-  (wait {:wait-strategy :health :true} container)
-  ```
+          ```clojure
+          (wait {:wait-strategy :health :true} container)
+          ```
 
-  ## Log Strategy
-  The :log strategy accepts a message which simply causes the output of your
-  container's log to be used in determining if the container is ready or not.
-  The output is `grepped` against the log message.
+          ## Log Strategy
+          The :log strategy accepts a message which simply causes the output of your
+          container's log to be used in determining if the container is ready or not.
+          The output is `grepped` against the log message.
 
-  Example:
+          Example:
 
-  ```clojure
-  (wait {:wait-strategy :log
-         :message \"accept connections\"} container)
-  ```"
-  :wait-strategy)
+          ```clojure
+          (wait {:wait-strategy :log
+                 :message \"accept connections\"} container)
+          ```"
+          :wait-strategy)
 
 (defmethod wait :http
   [{:keys [path
            port
+           method
            status-codes
            tls
            read-timeout
-           basic-credentials] :as options}
+           basic-credentials
+           headers
+           startup-timeout] :as options}
    ^GenericContainer container]
   (let [for-http (Wait/forHttp path)]
     (when port
       (.forPort for-http port))
+
+    (when method
+      (.withMethod for-http method))
 
     (doseq [status-code status-codes]
       (.forStatusCode for-http status-code))
@@ -98,26 +105,52 @@
       (.usingTls for-http))
 
     (when read-timeout
-      (.withReadTimeout for-http (java.time.Duration/ofSeconds read-timeout)))
+      (.withReadTimeout for-http (Duration/ofSeconds read-timeout)))
 
     (when basic-credentials
-      (let [{username :username password :password} basic-credentials]
+      (let [{:keys [username password]} basic-credentials]
         (.withBasicCredentials for-http username password)))
+
+    (when headers
+      (.withHeaders for-http headers))
+
+    (when startup-timeout
+      (.withStartupTimeout for-http (Duration/ofSeconds startup-timeout)))
 
     (.waitingFor container for-http)
 
     {:wait-for-http (dissoc options :strategy)}))
 
 (defmethod wait :health
-  [_ ^GenericContainer container]
-  (.waitingFor container (Wait/forHealthcheck))
+  [{:keys [startup-timeout]} ^GenericContainer container]
+  (let [strategy (Wait/forHealthcheck)]
+
+    (when startup-timeout
+      (.withStartupTimeout strategy (Duration/ofSeconds startup-timeout)))
+
+    (.waitingFor container strategy))
   {:wait-for-healthcheck true})
 
 (defmethod wait :log
-  [{:keys [message]} ^GenericContainer container]
-  (let [log-message (str ".*" message ".*\\n")]
-    (.waitingFor container (Wait/forLogMessage log-message 1))
+  [{:keys [message startup-timeout]} ^GenericContainer container]
+  (let [log-message (str ".*" message ".*\\n")
+        strategy (Wait/forLogMessage log-message 1)]
+
+    (when startup-timeout
+      (.withStartupTimeout strategy (Duration/ofSeconds startup-timeout)))
+
+    (.waitingFor container strategy)
     {:wait-for-log-message log-message}))
+
+(defmethod wait :port
+  [{:keys [startup-timeout]} ^GenericContainer container]
+  (let [strategy (Wait/forListeningPort)]
+
+    (when startup-timeout
+      (.withStartupTimeout strategy (Duration/ofSeconds startup-timeout)))
+
+    (.waitingFor container strategy))
+  {:wait-for-port true})
 
 (defmethod wait :default [_ _] nil)
 
@@ -149,11 +182,11 @@
   (when network-aliases
     (.setNetworkAliases container network-aliases))
 
-  (merge init-options {:container container
+  (merge init-options {:container     container
                        :exposed-ports (vec (.getExposedPorts container))
-                       :env-vars (into {} (.getEnvMap container))
-                       :host (.getHost container)
-                       :network network} (wait wait-for container)))
+                       :env-vars      (into {} (.getEnvMap container))
+                       :host          (.getHost container)
+                       :network       network} (wait wait-for container)))
 
 (s/fdef create
         :args (s/cat :create-options ::cs/create-options)
@@ -181,11 +214,11 @@
   [{:keys [^GenericContainer container] :as container-config}
    {:keys [^String resource-path ^String container-path mode]}]
   (assoc container-config
-         :container
-         (.withClasspathResourceMapping container
-                                        resource-path
-                                        container-path
-                                        (resolve-bind-mode mode))))
+    :container
+    (.withClasspathResourceMapping container
+                                   resource-path
+                                   container-path
+                                   (resolve-bind-mode mode))))
 
 (defn bind-filesystem!
   "Binds a source from the filesystem to the given container path. Should be
@@ -193,11 +226,11 @@
   [{:keys [^GenericContainer container] :as container-config}
    {:keys [^String host-path ^String container-path mode]}]
   (assoc container-config
-         :container
-         (.withFileSystemBind container
-                              host-path
-                              container-path
-                              (resolve-bind-mode mode))))
+    :container
+    (.withFileSystemBind container
+                         host-path
+                         container-path
+                         (resolve-bind-mode mode))))
 
 (defn copy-file-to-container!
   "If a container is not yet started, adds a mapping from mountable file to
@@ -208,16 +241,16 @@
   (let [^MountableFile mountable-file
         (case type
           :classpath-resource (MountableFile/forClasspathResource path)
-          :host-path          (MountableFile/forHostPath path))]
+          :host-path (MountableFile/forHostPath path))]
     (if id
       (do
         (.copyFileToContainer container mountable-file container-path)
         container-config)
       (assoc container-config
-             :container
-             (.withCopyFileToContainer container
-                                       mountable-file
-                                       container-path)))))
+        :container
+        (.withCopyFileToContainer container
+                                  mountable-file
+                                  container-path)))))
 
 (defn execute-command!
   "Executes a command in the container, and returns the result"
@@ -228,28 +261,28 @@
      :stderr    (.getStderr result)}))
 
 (defmulti log
-  "Sets a log strategy on the container as a means of accessing the container
-  logs.  It currently only supports a :string as the strategy to use.
+          "Sets a log strategy on the container as a means of accessing the container
+          logs.  It currently only supports a :string as the strategy to use.
 
-  ## String Strategy
-  The :string strategy sets up a function in the returned map, under the
-  `string-log` key. This function enables the dumping of the logs when passed to
-  the `dump-logs` function.
+          ## String Strategy
+          The :string strategy sets up a function in the returned map, under the
+          `string-log` key. This function enables the dumping of the logs when passed to
+          the `dump-logs` function.
 
-  Example:
+          Example:
 
-  ```clojure
-  {:log-strategy :string}
-  ```
+          ```clojure
+          {:log-strategy :string}
+          ```
 
-  Then, later in your program, you can access the logs thus:
+          Then, later in your program, you can access the logs thus:
 
-  ```clojure
-  (def container-config (tc/start! container))
-  (tc/dump-logs container-config)
-  ```
-   "
-  :log-strategy)
+          ```clojure
+          (def container-config (tc/start! container))
+          (tc/dump-logs container-config)
+          ```
+           "
+          :log-strategy)
 
 (defmethod log :string
   [_ ^GenericContainer container]
@@ -259,9 +292,9 @@
             (-> (.toUtf8String to-string-consumer)
                 (clojure.string/replace #"\n+" "\n")))}))
 
-(defmethod log :slf4j [_ _] nil) ;; Not yet implemented
+(defmethod log :slf4j [_ _] nil)                            ;; Not yet implemented
 
-(defmethod log :default [_ _] nil) ;; Not yet implemented
+(defmethod log :default [_ _] nil)                          ;; Not yet implemented
 
 (defn dump-logs
   "Dumps the logs found by invoking the function on the :string-log key"
@@ -286,9 +319,9 @@
                                   container-id
                                   image-name)
     (-> container-config
-        (merge {:id container-id
+        (merge {:id           container-id
                 :mapped-ports mapped-ports
-                :image-name image-name} logger)
+                :image-name   image-name} logger)
         (dissoc :log-to))))
 
 (defn stop!
@@ -320,9 +353,9 @@
            network-name (.getName network)]
        (.registerNetworkIdForCleanup ^ResourceReaper (reaper-instance) network-name)
        {:network network
-        :name network-name
-        :ipv6 (.getEnableIpv6 network)
-        :driver (.getDriver network)}))))
+        :name    network-name
+        :ipv6    (.getEnableIpv6 network)
+        :driver  (.getDriver network)}))))
 
 (def ^:deprecated init-network create-network)
 
