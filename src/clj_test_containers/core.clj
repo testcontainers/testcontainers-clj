@@ -1,25 +1,26 @@
 (ns clj-test-containers.core
   (:require
-    [clj-test-containers.spec.core :as cs]
-    [clojure.spec.alpha :as s]
-    [clojure.string])
+   [clj-test-containers.spec.core :as cs]
+   [clojure.spec.alpha :as s]
+   [clojure.string])
   (:import
-    (java.nio.file
-      Paths)
-    (org.testcontainers.containers
-      BindMode
-      GenericContainer
-      Network)
-    (org.testcontainers.containers.output
-      ToStringConsumer)
-    (org.testcontainers.containers.wait.strategy
-      Wait)
-    (org.testcontainers.images.builder
-      ImageFromDockerfile)
-    (org.testcontainers.utility
-      MountableFile
-      ResourceReaper)
-    (java.time Duration)))
+   (java.nio.file
+    Paths)
+   (java.time
+    Duration)
+   (org.testcontainers.containers
+    BindMode
+    GenericContainer
+    Network)
+   (org.testcontainers.containers.output
+    ToStringConsumer)
+   (org.testcontainers.containers.wait.strategy
+    Wait)
+   (org.testcontainers.images.builder
+    ImageFromDockerfile)
+   (org.testcontainers.utility
+    MountableFile
+    ResourceReaper)))
 
 (defn- resolve-bind-mode
   (^BindMode [bind-mode]
@@ -32,7 +33,7 @@
   (ResourceReaper/instance))
 
 (defmulti wait
-          "Sets a wait strategy to the container.  Supports :http, :health and :log as
+  "Sets a wait strategy to the container.  Supports :http, :health and :log as
           strategies.
 
           ## HTTP Strategy
@@ -78,7 +79,7 @@
           (wait {:wait-strategy :log
                  :message \"accept connections\"} container)
           ```"
-          :wait-strategy)
+  :wait-strategy)
 
 (defmethod wait :http
   [{:keys [path
@@ -214,11 +215,11 @@
   [{:keys [^GenericContainer container] :as container-config}
    {:keys [^String resource-path ^String container-path mode]}]
   (assoc container-config
-    :container
-    (.withClasspathResourceMapping container
-                                   resource-path
-                                   container-path
-                                   (resolve-bind-mode mode))))
+         :container
+         (.withClasspathResourceMapping container
+                                        resource-path
+                                        container-path
+                                        (resolve-bind-mode mode))))
 
 (defn bind-filesystem!
   "Binds a source from the filesystem to the given container path. Should be
@@ -226,11 +227,11 @@
   [{:keys [^GenericContainer container] :as container-config}
    {:keys [^String host-path ^String container-path mode]}]
   (assoc container-config
-    :container
-    (.withFileSystemBind container
-                         host-path
-                         container-path
-                         (resolve-bind-mode mode))))
+         :container
+         (.withFileSystemBind container
+                              host-path
+                              container-path
+                              (resolve-bind-mode mode))))
 
 (defn copy-file-to-container!
   "If a container is not yet started, adds a mapping from mountable file to
@@ -247,10 +248,10 @@
         (.copyFileToContainer container mountable-file container-path)
         container-config)
       (assoc container-config
-        :container
-        (.withCopyFileToContainer container
-                                  mountable-file
-                                  container-path)))))
+             :container
+             (.withCopyFileToContainer container
+                                       mountable-file
+                                       container-path)))))
 
 (defn execute-command!
   "Executes a command in the container, and returns the result"
@@ -261,7 +262,7 @@
      :stderr    (.getStderr result)}))
 
 (defmulti log
-          "Sets a log strategy on the container as a means of accessing the container
+  "Sets a log strategy on the container as a means of accessing the container
           logs.  It currently only supports a :string as the strategy to use.
 
           ## String Strategy
@@ -282,7 +283,7 @@
           (tc/dump-logs container-config)
           ```
            "
-          :log-strategy)
+  :log-strategy)
 
 (defmethod log :string
   [_ ^GenericContainer container]
@@ -292,9 +293,9 @@
             (-> (.toUtf8String to-string-consumer)
                 (clojure.string/replace #"\n+" "\n")))}))
 
-(defmethod log :slf4j [_ _] nil)                            ;; Not yet implemented
+(defmethod log :slf4j [_ _] nil)                            ; Not yet implemented
 
-(defmethod log :default [_ _] nil)                          ;; Not yet implemented
+(defmethod log :default [_ _] nil)                          ; Not yet implemented
 
 (defn dump-logs
   "Dumps the logs found by invoking the function on the :string-log key"
@@ -365,7 +366,7 @@
   (.performCleanup ^ResourceReaper (reaper-instance)))
 
 
-;;; REPL Helpers
+;; REPL Helpers
 (comment
   (start! (create {:image-name "postgres:12.1"}))
   (perform-cleanup!))
