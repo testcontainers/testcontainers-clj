@@ -20,6 +20,7 @@
                                   [lambdaisland/kaocha-junit-xml "0.0.76"]
                                   [mvxcvi/cljstyle "0.15.0" :exclusions [org.clojure/clojure]]
                                   [org.clojure/test.check "1.1.1"]
+                                  [orchestra "2021.01.01-1"]
                                   [org.clojure/tools.namespace "1.2.0"]
                                   [org.testcontainers/postgresql "1.16.3"]
                                   [com.fzakaria/slf4j-timbre "0.3.21"]]
