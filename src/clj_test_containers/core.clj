@@ -133,9 +133,12 @@
   {:wait-for-healthcheck true})
 
 (defmethod wait :log
-  [{:keys [message startup-timeout]} ^GenericContainer container]
+  [{:keys [message times startup-timeout]} ^GenericContainer container]
   (let [log-message (str ".*" message ".*\\n")
         strategy (Wait/forLogMessage log-message 1)]
+
+    (when times
+      (.withTimes strategy times))
 
     (when startup-timeout
       (.withStartupTimeout strategy (Duration/ofSeconds startup-timeout)))

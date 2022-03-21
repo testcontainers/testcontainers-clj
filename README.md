@@ -8,6 +8,8 @@ This library is a lightweight wrapper around the [Testcontainers Java library](h
 ## What it isn't
 This library does not provide tools to include testcontainers in your testing lifecycle. As there are many different test tools with different approaches to testing in the clojure world, handling the lifecycle is up to you.
 
+## Integration with test runners
+There is an [experimental kaocha plugin](https://github.com/lambdaschmiede/kaocha-testcontainers-plugin) you can try out
 
 ## Usage
 
