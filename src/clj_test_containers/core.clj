@@ -53,19 +53,20 @@
                  :tls true
                  :read-timeout 5
                  :basic-credentials {:username \"user\"
-                                     :password \"password\"}}
+                                     :password \"password\"
+                 :startup-timeout 60}}
                 container)
           ```
 
           ## Health Strategy
-          The :health strategy only accepts a true or false value. This enables support
-          for Docker's healthcheck feature, whereby you can directly leverage the
-          healthy state of your container as your wait condition.
+          The :health strategy enables support for Docker's healthcheck feature,
+          whereby you can directly leverage the healthy state of your container as your wait condition.
 
           Example:
 
           ```clojure
-          (wait {:wait-strategy :health :true} container)
+          (wait {:wait-strategy :health
+                 :startup-timeout 60} container)
           ```
 
           ## Log Strategy
@@ -77,7 +78,19 @@
 
           ```clojure
           (wait {:wait-strategy :log
-                 :message \"accept connections\"} container)
+                 :message \"accept connections\"
+                 :startup-timeout 60} container)
+          ```
+
+          ## Port Strategy
+          The port strategy waits for the first of the mapped ports to be opened. It only accepts the startup-timeout
+          value as a parameter.
+
+          Example:
+
+          ```clojure
+          (wait {:wait-strategy :port
+                 :startup-timeout 60} container
           ```"
   :wait-strategy)
 

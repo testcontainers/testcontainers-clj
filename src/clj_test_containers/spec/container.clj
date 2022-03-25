@@ -35,7 +35,7 @@
 (s/def ::log
   keyword?)
 
-(s/def ::wait-strategy #{:http :health :log})
+(s/def ::wait-strategy #{:http :health :port :log})
 
 (s/def ::log-strategy #{:string})
 
