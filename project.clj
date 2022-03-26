@@ -23,7 +23,8 @@
                                   [orchestra "2021.01.01-1"]
                                   [org.clojure/tools.namespace "1.2.0"]
                                   [org.testcontainers/postgresql "1.16.3"]
-                                  [com.fzakaria/slf4j-timbre "0.3.21"]]
+                                  [com.fzakaria/slf4j-timbre "0.3.21"]
+                                  [nrepl "0.9.0"]]
                    :source-paths ["dev-src"]}}
 
   :target-path "target/%s")

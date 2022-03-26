@@ -13,6 +13,8 @@
     GenericContainer
     Network)
    (org.testcontainers.containers.output
+    BaseConsumer
+    OutputFrame
     ToStringConsumer)
    (org.testcontainers.containers.wait.strategy
     Wait)
@@ -34,64 +36,64 @@
 
 (defmulti wait
   "Sets a wait strategy to the container.  Supports :http, :health and :log as
-          strategies.
+                  strategies.
 
-          ## HTTP Strategy
-          The :http strategy will only accept the container as initialized if it can be
-          accessed via HTTP. It accepts a path, a port, a vector of status codes, a
-          boolean that specifies if TLS is enabled, a read timeout in seconds and a map
-          with basic credentials, containing username and password. Only the path is
-          required, all others are optional.
+                  ## HTTP Strategy
+                  The :http strategy will only accept the container as initialized if it can be
+                  accessed via HTTP. It accepts a path, a port, a vector of status codes, a
+                  boolean that specifies if TLS is enabled, a read timeout in seconds and a map
+                  with basic credentials, containing username and password. Only the path is
+                  required, all others are optional.
 
-          Example:
+                  Example:
 
-          ```clojure
-          (wait {:wait-strategy :http
-                 :port 80
-                 :path \"/\"
-                 :status-codes [200 201]
-                 :tls true
-                 :read-timeout 5
-                 :basic-credentials {:username \"user\"
-                                     :password \"password\"
-                 :startup-timeout 60}}
-                container)
-          ```
+                  ```clojure
+                  (wait {:wait-strategy :http
+                         :port 80
+                         :path \"/\"
+                         :status-codes [200 201]
+                         :tls true
+                         :read-timeout 5
+                         :basic-credentials {:username \"user\"
+                                             :password \"password\"
+                         :startup-timeout 60}}
+                        container)
+                  ```
 
-          ## Health Strategy
-          The :health strategy enables support for Docker's healthcheck feature,
-          whereby you can directly leverage the healthy state of your container as your wait condition.
+                  ## Health Strategy
+                  The :health strategy enables support for Docker's healthcheck feature,
+                  whereby you can directly leverage the healthy state of your container as your wait condition.
 
-          Example:
+                  Example:
 
-          ```clojure
-          (wait {:wait-strategy :health
-                 :startup-timeout 60} container)
-          ```
+                  ```clojure
+                  (wait {:wait-strategy :health
+                         :startup-timeout 60} container)
+                  ```
 
-          ## Log Strategy
-          The :log strategy accepts a message which simply causes the output of your
-          container's log to be used in determining if the container is ready or not.
-          The output is `grepped` against the log message.
+                  ## Log Strategy
+                  The :log strategy accepts a message which simply causes the output of your
+                  container's log to be used in determining if the container is ready or not.
+                  The output is `grepped` against the log message.
 
-          Example:
+                  Example:
 
-          ```clojure
-          (wait {:wait-strategy :log
-                 :message \"accept connections\"
-                 :startup-timeout 60} container)
-          ```
+                  ```clojure
+                  (wait {:wait-strategy :log
+                         :message \"accept connections\"
+                         :startup-timeout 60} container)
+                  ```
 
-          ## Port Strategy
-          The port strategy waits for the first of the mapped ports to be opened. It only accepts the startup-timeout
-          value as a parameter.
+                  ## Port Strategy
+                  The port strategy waits for the first of the mapped ports to be opened. It only accepts the startup-timeout
+                  value as a parameter.
 
-          Example:
+                  Example:
 
-          ```clojure
-          (wait {:wait-strategy :port
-                 :startup-timeout 60} container
-          ```"
+                  ```clojure
+                  (wait {:wait-strategy :port
+                         :startup-timeout 60} container
+                  ```"
   :wait-strategy)
 
 (defmethod wait :http
@@ -278,27 +280,38 @@
      :stderr    (.getStderr result)}))
 
 (defmulti log
-  "Sets a log strategy on the container as a means of accessing the container
-          logs.  It currently only supports a :string as the strategy to use.
+  "Sets a log strategy on the container as a means of accessing the container logs.
 
-          ## String Strategy
-          The :string strategy sets up a function in the returned map, under the
-          `string-log` key. This function enables the dumping of the logs when passed to
-          the `dump-logs` function.
+                  ## String Strategy
+                  The `:string` strategy sets up a function in the returned map, under the
+                  `string-log` key. This function enables the dumping of the logs when passed to
+                  the `dump-logs` function.
 
-          Example:
+                  Example:
 
-          ```clojure
-          {:log-strategy :string}
-          ```
+                  ```clojure
+                  {:log-strategy :string}
+                  ```
 
-          Then, later in your program, you can access the logs thus:
+                  Then, later in your program, you can access the logs thus:
 
-          ```clojure
-          (def container-config (tc/start! container))
-          (tc/dump-logs container-config)
-          ```
-           "
+                  ```clojure
+                  (def container-config (tc/start! container))
+                  (tc/dump-logs container-config)
+                  ```
+
+                  ## Function Strategy
+                  The `:fn` strategy accepts an additional parameter `:function` in the configuration
+                  map, which allows you to pass a function to the Testcontainers log mechanism
+                  which accepts a single String parameter and gets called for every log line. This
+                  way you can pass the container logging on to the logging library of your choice.
+
+                  Example:
+                  ```clojure
+                  {:log-strategy :fn
+                   :function (fn [log-line] (println \"From Container: \" log-line)}
+                  ```
+                   "
   :log-strategy)
 
 (defmethod log :string
@@ -309,9 +322,12 @@
             (-> (.toUtf8String to-string-consumer)
                 (clojure.string/replace #"\n+" "\n")))}))
 
-(defmethod log :slf4j [_ _] nil)                            ; Not yet implemented
+(defmethod log :fn [{:keys [function]} ^GenericContainer container]
+  (.followOutput container (proxy [BaseConsumer] []
+                             (^void accept [^OutputFrame frame]
+                               (function (.getUtf8String frame))))))
 
-(defmethod log :default [_ _] nil)                          ; Not yet implemented
+(defmethod log :default [_ _] nil)
 
 (defn dump-logs
   "Dumps the logs found by invoking the function on the :string-log key"

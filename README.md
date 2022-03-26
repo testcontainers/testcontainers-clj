@@ -68,16 +68,16 @@ Creates a testcontainers instance from a given Docker label and returns them
 
 #### Config parameters:
 
-| Key                | Type                        | Description                                                                    |
-| -------------      | :-------------              | :-----                                                                         |
-| `:image-name`      | String, mandatory           | The name and label of an image, e.g. `postgres:12.2`                           |
-| `:exposed-ports`   | Vector with ints, mandatory | All ports which should be exposed and mapped to a local port                   |
-| `:env-vars`        | Map                         | A map with environment variables                                               |
-| `:command`         | Vector with strings         | The start command of the container                                             |
-| `:network`         | Map                         | A map containing the configuration of a Docker Network (see: `create-network`) |
-| `:network-aliases` | Map                         | A list of alias names for the container on the network                         |
-| `:wait-for`        | Map                         | A map containing the wait strategy to use and the condition to check for       |
-| `:log-to`          | Map                         | A map containing the log strategy to use, e.g. {:log-strategy string}          |
+| Key                | Type                        | Description                                                                                         |
+| -------------      | :-------------              |:----------------------------------------------------------------------------------------------------|
+| `:image-name`      | String, mandatory           | The name and label of an image, e.g. `postgres:12.2`                                                |
+| `:exposed-ports`   | Vector with ints, mandatory | All ports which should be exposed and mapped to a local port                                        |
+| `:env-vars`        | Map                         | A map with environment variables                                                                    |
+| `:command`         | Vector with strings         | The start command of the container                                                                  |
+| `:network`         | Map                         | A map containing the configuration of a Docker Network (see: `create-network`)                      |
+| `:network-aliases` | Map                         | A list of alias names for the container on the network                                              |
+| `:wait-for`        | Map                         | A map containing the [wait strategy](docs/wait-strategies.md) to use and the condition to check for |
+| `:log-to`          | Map                         | A map containing the [log strategy](docs/log-strategies.md) to use, e.g. {:log-strategy string}     |
 
 #### Result:
 
@@ -123,22 +123,22 @@ Initializes a given Testcontainer, which was e.g. provided by a library
 
 #### Config parameters:
 
-| Key                | Type                                                        | Description                                                                    |
-| -------------      | :-------------                                              | :-----                                                                         |
-| `:container`       | `org.testcontainers.containers.GenericContainer`, mandatory | The name and label of an image, e.g. `postgres:12.2`                           |
-| `:exposed-ports`   | Vector with ints, mandatory                                 | All ports which should be exposed and mapped to a local port                   |
-| `:env-vars`        | Map                                                         | A map with environment variables                                               |
-| `:command`         | Vector with strings                                         | The start command of the container                                             |
-| `:network`         | Map                                                         | A map containing the configuration of a Docker Network (see: `create-network`) |
-| `:network-aliases` | Map                                                         | A list of alias names for the container on the network                         |
-| `:wait-for`        | Map                                                         | A map containing the wait strategy to use and the condition to check for       |
-| `:log-to`          | Map                                                         | A map containing the log strategy to use, e.g. {:log-strategy string}          |
-|                    |                                                             |                                                                                |
+| Key                | Type                                                        | Description                                                                                         |
+| -------------      | :-------------                                              |:----------------------------------------------------------------------------------------------------|
+| `:container`       | `org.testcontainers.containers.GenericContainer`, mandatory | The name and label of an image, e.g. `postgres:12.2`                                                |
+| `:exposed-ports`   | Vector with ints, mandatory                                 | All ports which should be exposed and mapped to a local port                                        |
+| `:env-vars`        | Map                                                         | A map with environment variables                                                                    |
+| `:command`         | Vector with strings                                         | The start command of the container                                                                  |
+| `:network`         | Map                                                         | A map containing the configuration of a Docker Network (see: `create-network`)                      |
+| `:network-aliases` | Map                                                         | A list of alias names for the container on the network                                              |
+| `:wait-for`        | Map                                                         | A map containing the [wait strategy](docs/wait-strategies.md) to use and the condition to check for |
+| `:log-to`          | Map                                                         | A map containing the [log strategy](docs/log-strategies.md) to use, e.g. {:log-strategy string}                               |
+|                    |                                                             |                                                                                                     |
 
 #### Result:
 
 | Key              | Type                                      | Description                                                                               |
-| -------------    | :-------------                            | :-----                                                                                    |
+| -------------    | :-------------                            |:------------------------------------------------------------------------------------------|
 | `:container`     | `org.testcontainers.containers.Container` | The Testcontainers instance, accessible for everything this library doesn't provide (yet) |
 | `:exposed-ports` | Vector with ints                          | Value of the same input parameter                                                         |
 | `:env-vars`      | Map                                       | Value of the same input parameter                                                         |
@@ -185,8 +185,8 @@ Creates a testcontainer from a Dockerfile
 | `:command`         | Vector with strings         | The start command of the container                                             |
 | `:network`         | Map                         | A map containing the configuration of a Docker Network (see: `create-network`) |
 | `:network-aliases` | Map                         | A list of alias names for the container on the network                         |
-| `:wait-for`        | Map                         | A map containing the wait strategy to use and the condition to check for       |
-| `:log-to`          | Map                         | A map containing the log strategy to use, e.g. {:log-strategy string}          |
+| `:wait-for`        | Map                         | A map containing the [wait strategy](docs/wait-strategies.md) to use and the condition to check for       |
+| `:log-to`          | Map                         | A map containing the [log strategy](docs/log-strategies.md) to use, e.g. {:log-strategy string}          |
 |                    |                             |                                                                                |
 
 #### Result:

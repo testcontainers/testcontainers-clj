@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [0.6.0] - 2022-03-26
+### Changed
+- [#55](https://github.com/javahippie/clj-test-containers/issues/55): Upgrade to latest Testcontainers version
+
+### Added
+- [#42](https://github.com/javahippie/clj-test-containers/issues/42): Extend wait strategies
+
 ## [0.5.0] - 2021-08-18
 ### Changed
 - [#49](https://github.com/javahippie/clj-test-containers/issues/49): Updated to latest Testcontainers version

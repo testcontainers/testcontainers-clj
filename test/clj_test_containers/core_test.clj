@@ -20,12 +20,19 @@
       (is (nil? (:id stopped-container)))
       (is (nil? (:mapped-ports stopped-container)))))
 
-  (testing "Testing log access to the container"
+  (testing "Testing log access to the container with string logs"
     (let [container (sut/init {:container (PostgreSQLContainer. "postgres:12.2")
                                :log-to    {:log-strategy :string}})
           initialized-container (sut/start! container)]
       (Thread/sleep 500)
       (is (includes? (sut/dump-logs initialized-container) "database system is ready to accept connections"))))
+
+  (testing "Testing log access to the container with function logs"
+    (let [logs (atom [])]
+      (sut/start! (sut/init {:container (PostgreSQLContainer. "postgres:12.2")
+                             :log-to    {:log-strategy :fn
+                                         :function     #(swap! logs conj %)}}))
+      (is (filter #(includes? "database system is ready to accept connections" %) @logs))))
 
   (testing "Testing basic testcontainer generic image initialisation with wait for log message"
     (let [container (sut/create {:image-name    "postgres:12.2"
