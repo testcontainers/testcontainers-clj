@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. This change
 
 ### Added
 - [#42](https://github.com/javahippie/clj-test-containers/issues/42): Extend wait strategies
+- [#41](https://github.com/javahippie/clj-test-containers/issues/41): Complete logging mechanisms
 
 ## [0.5.0] - 2021-08-18
 ### Changed
@@ -25,7 +26,7 @@ All notable changes to this project will be documented in this file. This change
 
 ## [0.3.0] - 2020-10-23
 ### Added
-- [#25](https://github.com/javahippie/clj-test-containers/issues/25): Add support for a container wait stategy
+- [#25](https://github.com/javahippie/clj-test-containers/issues/25): Add support for a container wait strategy
 - [#35](https://github.com/javahippie/clj-test-containers/issues/35): Add support for docker version 2.4.0 - upgrading testcontainers-java version
 - [#27](https://github.com/javahippie/clj-test-containers/issues/27): Add support for accessing container logs
 - [#38](https://github.com/javahippie/clj-test-containers/pull/38): Add type hints to silence reflection warnings
