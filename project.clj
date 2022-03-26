@@ -1,4 +1,4 @@
-(defproject clj-test-containers "0.6.0-SNAPSHOT"
+(defproject clj-test-containers "0.6.0"
   :description "A lightweight, unofficial wrapper around the Testcontainers Java library"
 
   :url "https://github.com/javahippie/clj-test-containers"
@@ -15,7 +15,7 @@
   :plugins [[jainsahab/lein-githooks "1.0.0"]]
 
   :profiles {:dev {:dependencies [[expound "0.9.0"]
-                                  [lambdaisland/kaocha "1.63.998"]
+                                  [lambdaisland/kaocha "1.64.1010"]
                                   [lambdaisland/kaocha-cloverage "1.0.75"]
                                   [lambdaisland/kaocha-junit-xml "0.0.76"]
                                   [mvxcvi/cljstyle "0.15.0" :exclusions [org.clojure/clojure]]
