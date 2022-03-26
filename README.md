@@ -76,8 +76,8 @@ Creates a testcontainers instance from a given Docker label and returns them
 | `:command`         | Vector with strings         | The start command of the container                                                                  |
 | `:network`         | Map                         | A map containing the configuration of a Docker Network (see: `create-network`)                      |
 | `:network-aliases` | Map                         | A list of alias names for the container on the network                                              |
-| `:wait-for`        | Map                         | A map containing the [wait strategy](docs/wait-strategies.md) to use and the condition to check for |
-| `:log-to`          | Map                         | A map containing the [log strategy](docs/log-strategies.md) to use, e.g. {:log-strategy string}     |
+| `:wait-for`        | Map                         | A map containing the [wait strategy](doc/wait-strategies.md) to use and the condition to check for |
+| `:log-to`          | Map                         | A map containing the [log strategy](doc/log-strategies.md) to use, e.g. {:log-strategy string}     |
 
 #### Result:
 
@@ -131,8 +131,8 @@ Initializes a given Testcontainer, which was e.g. provided by a library
 | `:command`         | Vector with strings                                         | The start command of the container                                                                  |
 | `:network`         | Map                                                         | A map containing the configuration of a Docker Network (see: `create-network`)                      |
 | `:network-aliases` | Map                                                         | A list of alias names for the container on the network                                              |
-| `:wait-for`        | Map                                                         | A map containing the [wait strategy](docs/wait-strategies.md) to use and the condition to check for |
-| `:log-to`          | Map                                                         | A map containing the [log strategy](docs/log-strategies.md) to use, e.g. {:log-strategy string}                               |
+| `:wait-for`        | Map                                                         | A map containing the [wait strategy](doc/wait-strategies.md) to use and the condition to check for |
+| `:log-to`          | Map                                                         | A map containing the [log strategy](doc/log-strategies.md) to use, e.g. {:log-strategy string}                               |
 |                    |                                                             |                                                                                                     |
 
 #### Result:
@@ -185,8 +185,8 @@ Creates a testcontainer from a Dockerfile
 | `:command`         | Vector with strings         | The start command of the container                                             |
 | `:network`         | Map                         | A map containing the configuration of a Docker Network (see: `create-network`) |
 | `:network-aliases` | Map                         | A list of alias names for the container on the network                         |
-| `:wait-for`        | Map                         | A map containing the [wait strategy](docs/wait-strategies.md) to use and the condition to check for       |
-| `:log-to`          | Map                         | A map containing the [log strategy](docs/log-strategies.md) to use, e.g. {:log-strategy string}          |
+| `:wait-for`        | Map                         | A map containing the [wait strategy](doc/wait-strategies.md) to use and the condition to check for       |
+| `:log-to`          | Map                         | A map containing the [log strategy](doc/log-strategies.md) to use, e.g. {:log-strategy string}          |
 |                    |                             |                                                                                |
 
 #### Result:
