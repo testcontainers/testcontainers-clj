@@ -1,4 +1,4 @@
-(defproject clj-test-containers "0.6.0"
+(defproject clj-test-containers "0.7.0"
   :description "A lightweight, unofficial wrapper around the Testcontainers Java library"
 
   :url "https://github.com/javahippie/clj-test-containers"
@@ -7,7 +7,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
   :dependencies [[org.clojure/clojure "1.10.3"]
-                 [org.testcontainers/testcontainers "1.16.3"]]
+                 [org.testcontainers/testcontainers "1.17.1"]]
 
   :aliases {"test" ["run" "-m" "kaocha.runner"]
             "cljstyle" ["run" "-m" "cljstyle.main"]}
@@ -15,7 +15,7 @@
   :plugins [[jainsahab/lein-githooks "1.0.0"]]
 
   :profiles {:dev {:dependencies [[expound "0.9.0"]
-                                  [lambdaisland/kaocha "1.64.1010"]
+                                  [lambdaisland/kaocha "1.65.1029"]
                                   [lambdaisland/kaocha-cloverage "1.0.75"]
                                   [lambdaisland/kaocha-junit-xml "0.0.76"]
                                   [mvxcvi/cljstyle "0.15.0" :exclusions [org.clojure/clojure]]
