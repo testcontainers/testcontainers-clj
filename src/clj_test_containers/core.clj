@@ -102,6 +102,7 @@
            method
            status-codes
            tls
+           allow-insecure
            read-timeout
            basic-credentials
            headers
@@ -119,6 +120,9 @@
 
     (when tls
       (.usingTls for-http))
+
+    (when allow-insecure
+      (.allowInsecure for-http))
 
     (when read-timeout
       (.withReadTimeout for-http (Duration/ofSeconds read-timeout)))

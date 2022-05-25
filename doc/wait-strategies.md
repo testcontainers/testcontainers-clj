@@ -18,6 +18,7 @@ criteria is met.
 | method            | String     | The HTTP method to use (get, post, put...)              |
 | status-codes      | seq of int | The status codes which mark a successful request        |
 | tls               | boolean    | Should TLS be used?                                     |
+| allow-insecure    | boolean    | Should insecure HTTP endpoints be trusted?              |
 | read-timeout      | long       | The duration in seconds the HTTP may take               |
 | basic-credentials | Map        | {:username "User" :password "Password"}                 |
 | headers           | Map        | HTTP Headers, e.g. {"Accept" "application/json"}        |

@@ -1,6 +1,17 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [0.8.0] - 2202-05-25
+### Added
+- [#58](https://github.com/javahippie/clj-test-containers/issues/58): Add new `allowInsecure` flag to the HTTP wait strategy
+
+### Changed
+- [#57](https://github.com/javahippie/clj-test-containers/issues/57): Upgrade to testcontainers-java 1.17.2
+
+## [0.7.0] - 2022-04-23
+### Changed
+- [#56](https://github.com/javahippie/clj-test-containers/issues/56): Update to Testcontainers 1.17.1
+
 ## [0.6.0] - 2022-03-26
 ### Changed
 - [#55](https://github.com/javahippie/clj-test-containers/issues/55): Upgrade to latest Testcontainers version
