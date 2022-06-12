@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [0.8.0] - 2202-05-25
+## [0.7.1] - 2202-06-12
 ### Added
 - [#58](https://github.com/javahippie/clj-test-containers/issues/58): Add new `allowInsecure` flag to the HTTP wait strategy
 
