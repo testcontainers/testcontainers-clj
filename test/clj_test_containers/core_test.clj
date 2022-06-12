@@ -1,11 +1,11 @@
 (ns clj-test-containers.core-test
   (:require
-   [clj-test-containers.core :as sut]
-   [clojure.string :refer [includes?]]
-   [clojure.test :refer [deftest is testing]])
+    [clj-test-containers.core :as sut]
+    [clojure.string :refer [includes?]]
+    [clojure.test :refer [deftest is testing]])
   (:import
-   (org.testcontainers.containers
-    PostgreSQLContainer)))
+    (org.testcontainers.containers
+      PostgreSQLContainer)))
 
 (deftest create-test
   (testing "Testing basic testcontainer generic image initialisation"
@@ -38,8 +38,8 @@
     (let [container (sut/create {:image-name    "postgres:12.2"
                                  :exposed-ports [5432]
                                  :env-vars      {"POSTGRES_PASSWORD" "pw"}
-                                 :wait-for      {:wait-strategy :log
-                                                 :message "accept connections"
+                                 :wait-for      {:wait-strategy   :log
+                                                 :message         "accept connections"
                                                  :startup-timeout 10}})
           initialized-container (sut/start! container)
           stopped-container (sut/stop! container)]
@@ -65,18 +65,15 @@
       (is (nil? (:mapped-ports stopped-container)))))
 
   (testing "Testing basic testcontainer generic image initialisation with wait for http"
-    (let [container (sut/create {:image-name      "alpine:3.5"
+    (let [container (sut/create {:image-name      "bitnami/nginx:1.22"
                                  :network-aliases ["foo"]
-                                 :command         ["/bin/sh"
-                                                   "-c"
-                                                   "while true ; do printf 'HTTP/1.1 200 OK\\n\\nyay' | nc -l -p 8080; done"]
                                  :exposed-ports   [8080]
-                                 :wait-for        {:wait-strategy :http
-                                                   :path          "/"
-                                                   :port          8080
-                                                   :method        "GET"
-                                                   :status-codes  [200]
-                                                   :headers       {"Accept" "text/plain"}}})
+                                 :wait-for        {:wait-strategy  :http
+                                                   :path           "/"
+                                                   :port           8080
+                                                   :method         "GET"
+                                                   :status-codes   [200]
+                                                   :headers        {"Accept" "text/plain"}}})
           initialized-container (sut/start! container)
           stopped-container (sut/stop! container)]
       (is (some? (:id initialized-container)))
