@@ -1,11 +1,11 @@
 (ns clj-test-containers.core-test
   (:require
-    [clj-test-containers.core :as sut]
-    [clojure.string :refer [includes?]]
-    [clojure.test :refer [deftest is testing]])
+   [clj-test-containers.core :as sut]
+   [clojure.string :refer [includes?]]
+   [clojure.test :refer [deftest is testing]])
   (:import
-    (org.testcontainers.containers
-      PostgreSQLContainer)))
+   (org.testcontainers.containers
+    PostgreSQLContainer)))
 
 (deftest create-test
   (testing "Testing basic testcontainer generic image initialisation"
