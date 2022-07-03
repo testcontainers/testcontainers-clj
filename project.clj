@@ -1,4 +1,4 @@
-(defproject clj-test-containers "0.7.1"
+(defproject clj-test-containers "0.7.2"
   :description "A lightweight, unofficial wrapper around the Testcontainers Java library"
 
   :url "https://github.com/javahippie/clj-test-containers"
@@ -7,7 +7,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
   :dependencies [[org.clojure/clojure "1.10.3"]
-                 [org.testcontainers/testcontainers "1.17.2"]]
+                 [org.testcontainers/testcontainers "1.17.3"]]
 
   :aliases {"test" ["run" "-m" "kaocha.runner"]
             "cljstyle" ["run" "-m" "cljstyle.main"]}
@@ -22,7 +22,7 @@
                                   [org.clojure/test.check "1.1.1"]
                                   [orchestra "2021.01.01-1"]
                                   [org.clojure/tools.namespace "1.3.0"]
-                                  [org.testcontainers/postgresql "1.17.2"]
+                                  [org.testcontainers/postgresql "1.17.3"]
                                   [com.fzakaria/slf4j-timbre "0.3.21"]
                                   [nrepl "0.9.0"]]
                    :source-paths ["dev-src"]}}
