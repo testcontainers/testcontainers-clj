@@ -7,7 +7,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
   :dependencies [[org.clojure/clojure "1.10.3"]
-                 [org.testcontainers/testcontainers "1.17.3"]]
+                 [org.testcontainers/testcontainers "1.17.4"]]
 
   :aliases {"test" ["run" "-m" "kaocha.runner"]
             "cljstyle" ["run" "-m" "cljstyle.main"]}
@@ -15,16 +15,16 @@
   :plugins [[jainsahab/lein-githooks "1.0.0"]]
 
   :profiles {:dev {:dependencies [[expound "0.9.0"]
-                                  [lambdaisland/kaocha "1.66.1034"]
+                                  [lambdaisland/kaocha "1.70.1086"]
                                   [lambdaisland/kaocha-cloverage "1.0.75"]
-                                  [lambdaisland/kaocha-junit-xml "0.0.76"]
+                                  [lambdaisland/kaocha-junit-xml "1.16.98"]
                                   [mvxcvi/cljstyle "0.15.0" :exclusions [org.clojure/clojure]]
                                   [org.clojure/test.check "1.1.1"]
                                   [orchestra "2021.01.01-1"]
                                   [org.clojure/tools.namespace "1.3.0"]
-                                  [org.testcontainers/postgresql "1.17.3"]
+                                  [org.testcontainers/postgresql "1.17.4"]
                                   [com.fzakaria/slf4j-timbre "0.3.21"]
-                                  [nrepl "0.9.0"]]
+                                  [nrepl "1.0.0"]]
                    :source-paths ["dev-src"]}}
 
   :target-path "target/%s")
