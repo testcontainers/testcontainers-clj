@@ -346,7 +346,7 @@ Copies a file from your filesystem or classpath into the running container
 | `container-config`| Map, mandatory | Return value of the `create` function |
 | Second parameter: | | |
 | `:path`            | String, mandatory | Path to a classpath resource *or* file on your filesystem |
-| `:host-path`        | String, mandatory                | Path, to which the file should be copied |
+| `:container-path`        | String, mandatory                | Path, to which the file should be copied |
 | `:type`            | Keyword, mandatory                | `:classpath-resource` or `:host-path` |
 
 #### Result:
