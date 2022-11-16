@@ -30,5 +30,5 @@ Example:
 
 ```clojure
 {:log-strategy :fn
- :function     (fn [log-line] (println "From Container: " log-line)}
+ :function     (fn [log-line] (println "From Container: " log-line))}
 ```

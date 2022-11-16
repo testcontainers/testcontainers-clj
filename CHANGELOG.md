@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [0.7.4] - 22-11-16
+### Changed
+- [#65](https://github.com/javahippie/clj-test-containers/issues/65): Upgrade to testcontainers-java 1.17.6
+
 ## [0.7.3] - 2202-09-30
 ### Changed
 - [#63](https://github.com/javahippie/clj-test-containers/issues/63): Upgrade to testcontainers-java 1.17.4
