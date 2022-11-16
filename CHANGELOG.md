@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This change
 - [#64](https://github.com/javahippie/clj-test-containers/pull/64): Fix container path parameter for copy-file-to-container! in README
 - [#65](https://github.com/javahippie/clj-test-containers/issues/65): Upgrade to testcontainers-java 1.17.6
 - [#66](https://github.com/javahippie/clj-test-containers/issues/66): Remove usage of deprecated API calls for cleanup
+- [#67](https://github.com/javahippie/clj-test-containers/issues/67): Update Dependencies
 
 ## [0.7.3] - 2202-09-30
 ### Changed

@@ -15,9 +15,9 @@
   :plugins [[jainsahab/lein-githooks "1.0.0"]]
 
   :profiles {:dev {:dependencies [[expound "0.9.0"]
-                                  [lambdaisland/kaocha "1.70.1086"]
-                                  [lambdaisland/kaocha-cloverage "1.0.75"]
-                                  [lambdaisland/kaocha-junit-xml "1.16.98"]
+                                  [lambdaisland/kaocha "1.71.1119"]
+                                  [lambdaisland/kaocha-cloverage "1.1.89"]
+                                  [lambdaisland/kaocha-junit-xml "1.17.101"]
                                   [mvxcvi/cljstyle "0.15.0" :exclusions [org.clojure/clojure]]
                                   [org.clojure/test.check "1.1.1"]
                                   [orchestra "2021.01.01-1"]
