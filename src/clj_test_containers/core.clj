@@ -1,28 +1,28 @@
 (ns clj-test-containers.core
   (:require
-   [clj-test-containers.spec.core :as cs]
-   [clojure.spec.alpha :as s]
-   [clojure.string])
+    [clj-test-containers.spec.core :as cs]
+    [clojure.spec.alpha :as s]
+    [clojure.string])
   (:import
-   (java.nio.file
-    Paths)
-   (java.time
-    Duration)
-   (org.testcontainers.containers
-    BindMode
-    GenericContainer
-    Network)
-   (org.testcontainers.containers.output
-    BaseConsumer
-    OutputFrame
-    ToStringConsumer)
-   (org.testcontainers.containers.wait.strategy
-    Wait)
-   (org.testcontainers.images.builder
-    ImageFromDockerfile)
-   (org.testcontainers.utility
-    MountableFile
-    ResourceReaper)))
+    (java.nio.file
+      Paths)
+    (java.time
+      Duration)
+    (org.testcontainers DockerClientFactory)
+    (org.testcontainers.containers
+      BindMode
+      GenericContainer
+      Network)
+    (org.testcontainers.containers.output
+      BaseConsumer
+      OutputFrame
+      ToStringConsumer)
+    (org.testcontainers.containers.wait.strategy
+      Wait)
+    (org.testcontainers.images.builder
+      ImageFromDockerfile)
+    (org.testcontainers.utility
+      MountableFile)))
 
 (defn- resolve-bind-mode
   (^BindMode [bind-mode]
@@ -30,71 +30,69 @@
      BindMode/READ_WRITE
      BindMode/READ_ONLY)))
 
-(defn- reaper-instance
-  []
-  (ResourceReaper/instance))
+(defonce started-instances (atom #{}))
 
 (defmulti wait
-  "Sets a wait strategy to the container.  Supports :http, :health and :log as
-                  strategies.
+          "Sets a wait strategy to the container.  Supports :http, :health and :log as
+                          strategies.
 
-                  ## HTTP Strategy
-                  The :http strategy will only accept the container as initialized if it can be
-                  accessed via HTTP. It accepts a path, a port, a vector of status codes, a
-                  boolean that specifies if TLS is enabled, a read timeout in seconds and a map
-                  with basic credentials, containing username and password. Only the path is
-                  required, all others are optional.
+                          ## HTTP Strategy
+                          The :http strategy will only accept the container as initialized if it can be
+                          accessed via HTTP. It accepts a path, a port, a vector of status codes, a
+                          boolean that specifies if TLS is enabled, a read timeout in seconds and a map
+                          with basic credentials, containing username and password. Only the path is
+                          required, all others are optional.
 
-                  Example:
+                          Example:
 
-                  ```clojure
-                  (wait {:wait-strategy :http
-                         :port 80
-                         :path \"/\"
-                         :status-codes [200 201]
-                         :tls true
-                         :read-timeout 5
-                         :basic-credentials {:username \"user\"
-                                             :password \"password\"
-                         :startup-timeout 60}}
-                        container)
-                  ```
+                          ```clojure
+                          (wait {:wait-strategy :http
+                                 :port 80
+                                 :path \"/\"
+                                 :status-codes [200 201]
+                                 :tls true
+                                 :read-timeout 5
+                                 :basic-credentials {:username \"user\"
+                                                     :password \"password\"
+                                 :startup-timeout 60}}
+                                container)
+                          ```
 
-                  ## Health Strategy
-                  The :health strategy enables support for Docker's healthcheck feature,
-                  whereby you can directly leverage the healthy state of your container as your wait condition.
+                          ## Health Strategy
+                          The :health strategy enables support for Docker's healthcheck feature,
+                          whereby you can directly leverage the healthy state of your container as your wait condition.
 
-                  Example:
+                          Example:
 
-                  ```clojure
-                  (wait {:wait-strategy :health
-                         :startup-timeout 60} container)
-                  ```
+                          ```clojure
+                          (wait {:wait-strategy :health
+                                 :startup-timeout 60} container)
+                          ```
 
-                  ## Log Strategy
-                  The :log strategy accepts a message which simply causes the output of your
-                  container's log to be used in determining if the container is ready or not.
-                  The output is `grepped` against the log message.
+                          ## Log Strategy
+                          The :log strategy accepts a message which simply causes the output of your
+                          container's log to be used in determining if the container is ready or not.
+                          The output is `grepped` against the log message.
 
-                  Example:
+                          Example:
 
-                  ```clojure
-                  (wait {:wait-strategy :log
-                         :message \"accept connections\"
-                         :startup-timeout 60} container)
-                  ```
+                          ```clojure
+                          (wait {:wait-strategy :log
+                                 :message \"accept connections\"
+                                 :startup-timeout 60} container)
+                          ```
 
-                  ## Port Strategy
-                  The port strategy waits for the first of the mapped ports to be opened. It only accepts the startup-timeout
-                  value as a parameter.
+                          ## Port Strategy
+                          The port strategy waits for the first of the mapped ports to be opened. It only accepts the startup-timeout
+                          value as a parameter.
 
-                  Example:
+                          Example:
 
-                  ```clojure
-                  (wait {:wait-strategy :port
-                         :startup-timeout 60} container
-                  ```"
-  :wait-strategy)
+                          ```clojure
+                          (wait {:wait-strategy :port
+                                 :startup-timeout 60} container
+                          ```"
+          :wait-strategy)
 
 (defmethod wait :http
   [{:keys [path
@@ -237,11 +235,11 @@
   [{:keys [^GenericContainer container] :as container-config}
    {:keys [^String resource-path ^String container-path mode]}]
   (assoc container-config
-         :container
-         (.withClasspathResourceMapping container
-                                        resource-path
-                                        container-path
-                                        (resolve-bind-mode mode))))
+    :container
+    (.withClasspathResourceMapping container
+                                   resource-path
+                                   container-path
+                                   (resolve-bind-mode mode))))
 
 (defn bind-filesystem!
   "Binds a source from the filesystem to the given container path. Should be
@@ -249,11 +247,11 @@
   [{:keys [^GenericContainer container] :as container-config}
    {:keys [^String host-path ^String container-path mode]}]
   (assoc container-config
-         :container
-         (.withFileSystemBind container
-                              host-path
-                              container-path
-                              (resolve-bind-mode mode))))
+    :container
+    (.withFileSystemBind container
+                         host-path
+                         container-path
+                         (resolve-bind-mode mode))))
 
 (defn copy-file-to-container!
   "If a container is not yet started, adds a mapping from mountable file to
@@ -270,10 +268,10 @@
         (.copyFileToContainer container mountable-file container-path)
         container-config)
       (assoc container-config
-             :container
-             (.withCopyFileToContainer container
-                                       mountable-file
-                                       container-path)))))
+        :container
+        (.withCopyFileToContainer container
+                                  mountable-file
+                                  container-path)))))
 
 (defn execute-command!
   "Executes a command in the container, and returns the result"
@@ -284,39 +282,39 @@
      :stderr    (.getStderr result)}))
 
 (defmulti log
-  "Sets a log strategy on the container as a means of accessing the container logs.
+          "Sets a log strategy on the container as a means of accessing the container logs.
 
-                  ## String Strategy
-                  The `:string` strategy sets up a function in the returned map, under the
-                  `string-log` key. This function enables the dumping of the logs when passed to
-                  the `dump-logs` function.
+                          ## String Strategy
+                          The `:string` strategy sets up a function in the returned map, under the
+                          `string-log` key. This function enables the dumping of the logs when passed to
+                          the `dump-logs` function.
 
-                  Example:
+                          Example:
 
-                  ```clojure
-                  {:log-strategy :string}
-                  ```
+                          ```clojure
+                          {:log-strategy :string}
+                          ```
 
-                  Then, later in your program, you can access the logs thus:
+                          Then, later in your program, you can access the logs thus:
 
-                  ```clojure
-                  (def container-config (tc/start! container))
-                  (tc/dump-logs container-config)
-                  ```
+                          ```clojure
+                          (def container-config (tc/start! container))
+                          (tc/dump-logs container-config)
+                          ```
 
-                  ## Function Strategy
-                  The `:fn` strategy accepts an additional parameter `:function` in the configuration
-                  map, which allows you to pass a function to the Testcontainers log mechanism
-                  which accepts a single String parameter and gets called for every log line. This
-                  way you can pass the container logging on to the logging library of your choice.
+                          ## Function Strategy
+                          The `:fn` strategy accepts an additional parameter `:function` in the configuration
+                          map, which allows you to pass a function to the Testcontainers log mechanism
+                          which accepts a single String parameter and gets called for every log line. This
+                          way you can pass the container logging on to the logging library of your choice.
 
-                  Example:
-                  ```clojure
-                  {:log-strategy :fn
-                   :function (fn [log-line] (println \"From Container: \" log-line)}
-                  ```
-                   "
-  :log-strategy)
+                          Example:
+                          ```clojure
+                          {:log-strategy :fn
+                           :function (fn [log-line] (println \"From Container: \" log-line)}
+                          ```
+                           "
+          :log-strategy)
 
 (defmethod log :string
   [_ ^GenericContainer container]
@@ -352,9 +350,7 @@
         container-id ^String (.getContainerId container)
         image-name ^String (.getDockerImageName container)
         logger (log log-to container)]
-    (.registerContainerForCleanup ^ResourceReaper (reaper-instance)
-                                  container-id
-                                  image-name)
+    (swap! started-instances conj {:type :container :id container-id})
     (-> container-config
         (merge {:id           container-id
                 :mapped-ports mapped-ports
@@ -388,7 +384,7 @@
 
      (let [network (.build builder)
            network-name (.getName network)]
-       (.registerNetworkIdForCleanup ^ResourceReaper (reaper-instance) network-name)
+       (swap! started-instances conj {:type :network :id :network-name})
        {:network network
         :name    network-name
         :ipv6    (.getEnableIpv6 network)
@@ -396,10 +392,32 @@
 
 (def ^:deprecated init-network create-network)
 
+(defn- remove-network! [instance]
+  (-> (DockerClientFactory/instance)
+      (.client)
+      (.removeNetworkCmd (:id instance))
+      (.exec))
+  instance)
+
+(defn- stop-and-remove-container! [instance]
+  (let [docker-client (DockerClientFactory/instance)]
+    (-> docker-client
+        (.client)
+        (.stopContainerCmd (:id instance))
+        (.exec))
+    (-> docker-client
+        (.client)
+        (.removeContainerCmd (:id instance))
+        (.exec)))
+  instance)
+
 (defn perform-cleanup!
   "Stops and removes all container instances which were created in the active JVM or REPL session"
   []
-  (.performCleanup ^ResourceReaper (reaper-instance)))
+  (for [instance @started-instances]
+    (swap! started-instances disj (case (:type instance)
+                                    :container (stop-and-remove-container! instance)
+                                    :network (remove-network! instance)))))
 
 
 ;; REPL Helpers
