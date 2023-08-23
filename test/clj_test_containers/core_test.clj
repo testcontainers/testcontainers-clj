@@ -9,7 +9,7 @@
 
 (deftest create-test
   (testing "Testing basic testcontainer generic image initialisation"
-    (let [container (sut/create {:image-name    "postgres:12.2"
+    (let [container (sut/create {:image-name    "postgres:15.3"
                                  :exposed-ports [5432]
                                  :env-vars      {"POSTGRES_PASSWORD" "pw"}})
           initialized-container (sut/start! container)
@@ -21,21 +21,29 @@
       (is (nil? (:mapped-ports stopped-container)))))
 
   (testing "Testing log access to the container with string logs"
-    (let [container (sut/init {:container (PostgreSQLContainer. "postgres:12.2")
-                               :log-to    {:log-strategy :string}})
+    (let [container (sut/create {:image-name    "postgres:15.3"
+                                 :exposed-ports [5432]
+                                 :env-vars      {"POSTGRES_PASSWORD" "pw"}
+                                 :log-to        {:log-strategy :string}})
           initialized-container (sut/start! container)]
       (Thread/sleep 500)
       (is (includes? (sut/dump-logs initialized-container) "database system is ready to accept connections"))))
 
   (testing "Testing log access to the container with function logs"
     (let [logs (atom [])]
-      (sut/start! (sut/init {:container (PostgreSQLContainer. "postgres:12.2")
+      (sut/start! (sut/init {:container (PostgreSQLContainer. "postgres:15.3")
+                             :exposed-ports [5432]
                              :log-to    {:log-strategy :fn
                                          :function     #(swap! logs conj %)}}))
       (is (filter #(includes? "database system is ready to accept connections" %) @logs))))
 
+  (testing "Testing log access to the container with unconfigured logger"
+    (let [container  (sut/start! (sut/init {:container (PostgreSQLContainer. "postgres:15.3")
+                                            :exposed-ports [5432]}))]
+      (is (thrown? IllegalStateException (sut/dump-logs container)))))
+
   (testing "Testing basic testcontainer generic image initialisation with wait for log message"
-    (let [container (sut/create {:image-name    "postgres:12.2"
+    (let [container (sut/create {:image-name    "postgres:15.3"
                                  :exposed-ports [5432]
                                  :env-vars      {"POSTGRES_PASSWORD" "pw"}
                                  :wait-for      {:wait-strategy   :log
@@ -51,7 +59,7 @@
       (is (nil? (:mapped-ports stopped-container)))))
 
   (testing "Testing basic testcontainer generic image initialisation with wait for host port"
-    (let [container (sut/create {:image-name    "postgres:12.2"
+    (let [container (sut/create {:image-name    "postgres:15.3"
                                  :exposed-ports [5432]
                                  :env-vars      {"POSTGRES_PASSWORD" "pw"}
                                  :wait-for      {:wait-strategy :port}})
@@ -101,7 +109,8 @@
 
 
   (testing "Executing a command in the running Docker container with a custom container"
-    (let [container (sut/init {:container (PostgreSQLContainer. "postgres:12.2")})
+    (let [container (sut/init {:container (PostgreSQLContainer. "postgres:15.3")
+                               :exposed-ports [5432]})
           initialized-container (sut/start! container)
           result (sut/execute-command! initialized-container ["whoami"])
           _stopped-container (sut/stop! container)]
@@ -111,7 +120,7 @@
 (deftest execute-command-in-container
 
   (testing "Executing a command in the running Docker container"
-    (let [container (sut/create {:image-name    "postgres:12.2"
+    (let [container (sut/create {:image-name    "postgres:15.3"
                                  :exposed-ports [5432]
                                  :env-vars      {"POSTGRES_PASSWORD" "pw"}})
           initialized-container (sut/start! container)
@@ -123,7 +132,7 @@
 (deftest init-volume-test
 
   (testing "Testing mapping of a classpath resource"
-    (let [container (-> (sut/create {:image-name    "postgres:12.2"
+    (let [container (-> (sut/create {:image-name    "postgres:15.3"
                                      :exposed-ports [5432]
                                      :env-vars      {"POSTGRES_PASSWORD" "pw"}})
                         (sut/map-classpath-resource! {:resource-path  "test.sql"
@@ -140,7 +149,7 @@
       (is (nil? (:mapped-ports stopped-container)))))
 
   (testing "Testing mapping of a filesystem-binding"
-    (let [container (-> (sut/create {:image-name    "postgres:12.2"
+    (let [container (-> (sut/create {:image-name    "postgres:15.3"
                                      :exposed-ports [5432]
                                      :env-vars      {"POSTGRES_PASSWORD" "pw"}})
                         (sut/bind-filesystem! {:host-path      "."
@@ -157,7 +166,7 @@
       (is (nil? (:mapped-ports stopped-container)))))
 
   (testing "Copying a file from the host into the container"
-    (let [container (-> (sut/create {:image-name    "postgres:12.2"
+    (let [container (-> (sut/create {:image-name    "postgres:15.3"
                                      :exposed-ports [5432]
                                      :env-vars      {"POSTGRES_PASSWORD" "pw"}})
                         (sut/copy-file-to-container! {:path           "test.sql"
@@ -175,7 +184,7 @@
 
 
   (testing "Copying a file from the classpath into the container"
-    (let [container (-> (sut/create {:image-name    "postgres:12.2"
+    (let [container (-> (sut/create {:image-name    "postgres:15.3"
                                      :exposed-ports [5432]
                                      :env-vars      {"POSTGRES_PASSWORD" "pw"}})
                         (sut/copy-file-to-container! {:path           "test.sql"
@@ -192,7 +201,7 @@
       (is (nil? (:mapped-ports stopped-container)))))
 
   (testing "Copying a file from the host into a running container"
-    (let [container (sut/create {:image-name    "postgres:12.2"
+    (let [container (sut/create {:image-name    "postgres:15.3"
                                  :exposed-ports [5432]
                                  :env-vars      {"POSTGRES_PASSWORD" "pw"}})
           initialized-container (sut/start! container)
@@ -211,7 +220,7 @@
       (is (nil? (:mapped-ports stopped-container)))))
 
   (testing "Copying a file from the classpath into a running container"
-    (let [container (sut/create {:image-name    "postgres:12.2"
+    (let [container (sut/create {:image-name    "postgres:15.3"
                                  :exposed-ports [5432]
                                  :env-vars      {"POSTGRES_PASSWORD" "pw"}})
           initialized-container (sut/start! container)

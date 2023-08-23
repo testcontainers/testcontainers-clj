@@ -334,7 +334,10 @@
 (defn dump-logs
   "Dumps the logs found by invoking the function on the :string-log key"
   [container-config]
-  ((:log container-config)))
+  (let [log-fn (:log container-config)]
+    (if (some? log-fn)
+      (log-fn)
+      (throw (IllegalStateException. "You are trying to access the container logs, but have not configured a log configuration with :log-to")))))
 
 (defn start!
   "Starts the underlying testcontainer instance and adds new values to the
