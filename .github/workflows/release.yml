@@ -8,7 +8,7 @@ permissions:
   contents: read
 
 jobs:
-  clojars:
+  release:
     name: Release
     runs-on: ubuntu-latest
     steps:
@@ -21,26 +21,7 @@ jobs:
       - name: Set version
         run: |
           lein change version set '"${{github.event.release.tag_name}}"'
-      - name: Release
-        run: lein with-profile release deploy clojars
-        env:
-          CLOJARS_USERNAME: ${{ secrets.CLOJARS_USERNAME }}
-          CLOJARS_PASSWORD: ${{ secrets.CLOJARS_PASSWORD }}
-
-  maven:
-    name: Release
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Setup Build
-        uses: ./.github/actions/setup-build
-      - name: Set version
-        run: |
-          lein change version set '"${{github.event.release.tag_name}}"'
-      - name: Release
+      - name: Release ${{github.event.release.tag_name}}
         run: lein with-profile release deploy maven
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}

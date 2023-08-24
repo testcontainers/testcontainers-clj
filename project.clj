@@ -26,11 +26,7 @@
                                   [com.fzakaria/slf4j-timbre "0.3.21"]
                                   [nrepl "1.0.0"]]
                    :source-paths ["dev-src"]}
-             :release {:deploy-repositories [["clojars" {:url           "https://repo.clojars.org"
-                                                         :username      :env/clojars_username
-                                                         :password      :env/clojars_password
-                                                         :sign-releases false}]
-                                             ["maven" {:url           "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+             :release {:deploy-repositories [["maven" {:url           "https://oss.sonatype.org/service/local/staging/deploy/maven2"
                                                        :username      :env/ossrh_username
                                                        :password      :env/ossrh_password
                                                        :sign-releases false}]]}}
