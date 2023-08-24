@@ -1,7 +1,7 @@
-(defproject clj-test-containers "0.7.4"
-  :description "A lightweight, unofficial wrapper around the Testcontainers Java library"
+(defproject clj-test-containers "unspecified"
+  :description "A lightweight, official wrapper around the Testcontainers Java library"
 
-  :url "https://github.com/javahippie/clj-test-containers"
+  :url "https://github.com/testcontainers/testcontainers-clj"
 
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
@@ -25,6 +25,14 @@
                                   [org.testcontainers/postgresql "1.19.0"]
                                   [com.fzakaria/slf4j-timbre "0.3.21"]
                                   [nrepl "1.0.0"]]
-                   :source-paths ["dev-src"]}}
+                   :source-paths ["dev-src"]}
+             :release {:deploy-repositories [["clojars" {:url           "https://repo.clojars.org"
+                                                         :username      :env/clojars_username
+                                                         :password      :env/clojars_password
+                                                         :sign-releases false}]
+                                             ["maven" {:url           "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                                                       :username      :env/ossrh_username
+                                                       :password      :env/ossrh_password
+                                                       :sign-releases false}]]}}
 
   :target-path "target/%s")

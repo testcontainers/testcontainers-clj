@@ -1,0 +1,18 @@
+name: Set up Build
+description: Sets up Build
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-java@v3
+      with:
+        java-version: '8'
+        distribution: temurin
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-lein-${{ hashFiles('**/project.clj') }}
+        restore-keys: ${{ runner.os }}-lein-
+    - name: Clear existing docker image cache
+      shell: bash
+      run: docker image prune -af
