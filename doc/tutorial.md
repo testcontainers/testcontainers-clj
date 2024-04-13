@@ -89,10 +89,10 @@ atom, a fixture for Testcontainers could look like this:
 
 ```clojure
 (use-fixtures :once (fn [f]
-                      (let [{pw       "apassword"
-                             postgres (tc/start! (tc/create {:image-name    "postgres:12.2"
-                                                             :exposed-ports [5432]
-                                                             :env-vars      {"POSTGRES_PASSWORD" pw}}))}]
+                      (let [pw       "apassword"
+                            postgres (tc/start! (tc/create {:image-name    "postgres:12.2"
+                                                            :exposed-ports [5432]
+                                                            :env-vars      {"POSTGRES_PASSWORD" pw}}))]
                         (my-app/initialize-db! {:dbtype   "postgresql"
                                                 :dbname   "postgres"
                                                 :user     "postgres"
