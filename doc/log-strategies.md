@@ -4,13 +4,13 @@ This library offers two ways to access the logs of the running container: The :s
 
 ## String Strategy
 
-The `:string` strategy sets up a function in the returned map, under the `string-log` key. This function enables the
+The `:string` strategy sets up a function in the returned map, under the `:log` key. This function enables the
 dumping of the logs when passed to the `dump-logs` function.
 
 Example:
 
 ```clojure
-{:log-strategy :string}
+{:log-to {:log-strategy :string}}
 ```
 
 Then, later in your program, you can access the logs thus:
@@ -29,6 +29,6 @@ This way you can pass the container logging on to the logging library of your ch
 Example:
 
 ```clojure
-{:log-strategy :fn
- :function     (fn [log-line] (println "From Container: " log-line))}
+{:log-to {:log-strategy :fn
+          :function     (fn [log-line] (println "From Container: " log-line))}}
 ```
