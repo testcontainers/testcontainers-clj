@@ -1,27 +1,27 @@
 {:paths   ["src" "resources"]
 
  :deps    {org.clojure/clojure               {:mvn/version "1.10.3"}
-           org.testcontainers/testcontainers {:mvn/version "1.17.6"}}
+           org.testcontainers/testcontainers {:mvn/version "1.19.7"}}
 
  :aliases {:dev         {:extra-paths "dev-src"}
            :test        {:extra-paths ["test" "test/resources"]
                          :extra-deps  {expound/expound               {:mvn/version "0.9.0"}
-                                       lambdaisland/kaocha           {:mvn/version "1.71.1119"}
+                                       lambdaisland/kaocha           {:mvn/version "1.88.1376"}
                                        lambdaisland/kaocha-cloverage {:mvn/version "1.1.89"}
                                        lambdaisland/kaocha-junit-xml {:mvn/version "1.17.101"}
                                        org.clojure/test.check        {:mvn/version "1.1.1"}
-                                       org.testcontainers/postgresql {:mvn/version "1.17.6"}}}
+                                       org.testcontainers/postgresql {:mvn/version "1.19.7"}}}
 
            :test-runner {:extra-paths ["test" "test/resources"]
                          :extra-deps  {expound/expound               {:mvn/version "0.9.0"}
-                                       lambdaisland/kaocha           {:mvn/version "1.71.1119"}
+                                       lambdaisland/kaocha           {:mvn/version "1.88.1376"}
                                        lambdaisland/kaocha-cloverage {:mvn/version "1.1.89"}
                                        lambdaisland/kaocha-junit-xml {:mvn/version "1.17.101"}
                                        org.clojure/test.check        {:mvn/version "1.1.1"}
                                        orchestra                     {:mvn/version "2021.01.01-1"}
-                                       org.testcontainers/postgresql {:mvn/version "1.17.6"}}
+                                       org.testcontainers/postgresql {:mvn/version "1.19.7"}}
                          :main-opts   ["-m" "kaocha.runner" "--reporter" "kaocha.report/documentation"]}
 
-           :cljstyle    {:extra-deps {mvxcvi/cljstyle {:mvn/version "0.15.0"
+           :cljstyle    {:extra-deps {mvxcvi/cljstyle {:mvn/version "0.16.630"
                                                        :exclusions  [org.clojure/clojure]}}
                          :main-opts  ["-m" "cljstyle.main" "check"]}}}
