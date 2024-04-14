@@ -25,13 +25,15 @@
                    ::csc/exposed-ports
                    ::csc/env-vars
                    ::csc/host]
-          :opt-un [::network
+          :opt-un [::csc/reuse
+                   ::network
                    ::wait-for
                    ::log-to]))
 
 (s/def ::init-options
   (s/keys :req-un [::csc/container]
           :opt-un [::csc/exposed-ports
+                   ::csc/reuse
                    ::csc/env-vars
                    ::csc/command
                    ::network

@@ -68,19 +68,21 @@ Creates a testcontainers instance from a given Docker label and returns them
 | -------------      | :-------------              |:----------------------------------------------------------------------------------------------------|
 | `:image-name`      | String, mandatory           | The name and label of an image, e.g. `postgres:12.2`                                                |
 | `:exposed-ports`   | Vector with ints, mandatory | All ports which should be exposed and mapped to a local port                                        |
+| `:reuse`           | Boolean                     | Should the container be reused, if another Testcontainer with identical config is started?          |
 | `:env-vars`        | Map                         | A map with environment variables                                                                    |
 | `:command`         | Vector with strings         | The start command of the container                                                                  |
 | `:network`         | Map                         | A map containing the configuration of a Docker Network (see: `create-network`)                      |
 | `:network-aliases` | Map                         | A list of alias names for the container on the network                                              |
-| `:wait-for`        | Map                         | A map containing the [wait strategy](doc/wait-strategies.md) to use and the condition to check for |
-| `:log-to`          | Map                         | A map containing the [log strategy](doc/log-strategies.md) to use, e.g. {:log-strategy string}     |
+| `:wait-for`        | Map                         | A map containing the [wait strategy](doc/wait-strategies.md) to use and the condition to check for  |
+| `:log-to`          | Map                         | A map containing the [log strategy](doc/log-strategies.md) to use, e.g. {:log-strategy string}      |
 
 #### Result:
 
 | Key              | Type                                      | Description                                                                               |
-| -------------    | :-------------                            | :-----                                                                                    |
+|------------------|:------------------------------------------|:------------------------------------------------------------------------------------------|
 | `:container`     | `org.testcontainers.containers.Container` | The Testcontainers instance, accessible for everything this library doesn't provide (yet) |
 | `:exposed-ports` | Vector with ints                          | Value of the same input parameter                                                         |
+| `:reuse`         | Boolean                                   | Is this container reusable?                                                               |
 | `:env-vars`      | Map                                       | Value of the same input parameter                                                         |
 | `:host`          | String                                    | The host for the Docker Container                                                         |
 | `:network`       | Map                                       | The network configuration of the Container, if provided                                   |
@@ -91,6 +93,20 @@ Creates a testcontainers instance from a given Docker label and returns them
 ```clojure
 (create {:image-name      "alpine:3.2"
          :exposed-ports   [80]
+         :env-vars        {"MAGIC_NUMBER" "42"}
+         :network         (create-network)
+         :network-aliases ["api-server"]
+         :command         ["/bin/sh"
+                           "-c"
+                           "while true; do echo \"$MAGIC_NUMBER\" | nc -l -p 80; done"]})
+```
+
+#### Example with reuse
+
+```clojure
+(create {:image-name      "alpine:3.2"
+         :exposed-ports   [80]
+         :reuse           true
          :env-vars        {"MAGIC_NUMBER" "42"}
          :network         (create-network)
          :network-aliases ["api-server"]
@@ -119,17 +135,18 @@ Initializes a given Testcontainer, which was e.g. provided by a library
 
 #### Config parameters:
 
-| Key                | Type                                                        | Description                                                                                         |
-| -------------      | :-------------                                              |:----------------------------------------------------------------------------------------------------|
-| `:container`       | `org.testcontainers.containers.GenericContainer`, mandatory | The name and label of an image, e.g. `postgres:12.2`                                                |
-| `:exposed-ports`   | Vector with ints, mandatory                                 | All ports which should be exposed and mapped to a local port                                        |
-| `:env-vars`        | Map                                                         | A map with environment variables                                                                    |
-| `:command`         | Vector with strings                                         | The start command of the container                                                                  |
-| `:network`         | Map                                                         | A map containing the configuration of a Docker Network (see: `create-network`)                      |
-| `:network-aliases` | Map                                                         | A list of alias names for the container on the network                                              |
+| Key                | Type                                                        | Description                                                                                        |
+|--------------------|:------------------------------------------------------------|:---------------------------------------------------------------------------------------------------|
+| `:container`       | `org.testcontainers.containers.GenericContainer`, mandatory | The name and label of an image, e.g. `postgres:12.2`                                               |
+| `:exposed-ports`   | Vector with ints, mandatory                                 | All ports which should be exposed and mapped to a local port                                       |
+| `:reuse`           | Boolean                                                     | Should the container be reused, if another Testcontainer with identical config is started?         |
+| `:env-vars`        | Map                                                         | A map with environment variables                                                                   |
+| `:command`         | Vector with strings                                         | The start command of the container                                                                 |
+| `:network`         | Map                                                         | A map containing the configuration of a Docker Network (see: `create-network`)                     |
+| `:network-aliases` | Map                                                         | A list of alias names for the container on the network                                             |
 | `:wait-for`        | Map                                                         | A map containing the [wait strategy](doc/wait-strategies.md) to use and the condition to check for |
-| `:log-to`          | Map                                                         | A map containing the [log strategy](doc/log-strategies.md) to use, e.g. {:log-strategy string}                               |
-|                    |                                                             |                                                                                                     |
+| `:log-to`          | Map                                                         | A map containing the [log strategy](doc/log-strategies.md) to use, e.g. {:log-strategy string}     |
+|                    |                                                             |                                                                                                    |
 
 #### Result:
 
@@ -137,6 +154,7 @@ Initializes a given Testcontainer, which was e.g. provided by a library
 | -------------    | :-------------                            |:------------------------------------------------------------------------------------------|
 | `:container`     | `org.testcontainers.containers.Container` | The Testcontainers instance, accessible for everything this library doesn't provide (yet) |
 | `:exposed-ports` | Vector with ints                          | Value of the same input parameter                                                         |
+| `:reuse`         | Boolean                                   | Is this container reusable?                                                               |
 | `:env-vars`      | Map                                       | Value of the same input parameter                                                         |
 | `:host`          | String                                    | The host for the Docker Container                                                         |
 | `:network`       | Map                                       | The network configuration of the Container, if provided                                   |
@@ -177,6 +195,7 @@ Creates a testcontainer from a Dockerfile
 | -------------      | :-------------              | :-----                                                                         |
 | `:docker-file`     | String, mandatory           | String containing a path to a Dockerfile                                       |
 | `:exposed-ports`   | Vector with ints, mandatory | All ports which should be exposed and mapped to a local port                   |
+| `:reuse`           | Boolean                                                     | Should the container be reused, if another Testcontainer with identical config is started?         |
 | `:env-vars`        | Map                         | A map with environment variables                                               |
 | `:command`         | Vector with strings         | The start command of the container                                             |
 | `:network`         | Map                         | A map containing the configuration of a Docker Network (see: `create-network`) |
@@ -191,6 +210,7 @@ Creates a testcontainer from a Dockerfile
 | -------------    | :-------------                            | :-----                                                                                    |
 | `:container`     | `org.testcontainers.containers.Container` | The Testcontainers instance, accessible for everything this library doesn't provide (yet) |
 | `:exposed-ports` | Vector with ints                          | Value of the same input parameter                                                         |
+| `:reuse`         | Boolean                                   | Is this container reusable?                                                               |
 | `:env-vars`      | Map                                       | Value of the same input parameter                                                         |
 | `:host`          | String                                    | The host for the Docker Container                                                         |
 | `:network`       | Map                                       | The network configuration of the Container, if provided                                   |
@@ -227,6 +247,7 @@ Starts the Testcontainer, which was defined by `create`
 | -------------    | :-------------                            | :-----                                                                                    |
 | `:container`     | `org.testcontainers.containers.Container` | The Testcontainers instance, accessible for everything this library doesn't provide (yet) |
 | `:exposed-ports` | Vector with ints                          | Value of the same input parameter                                                         |
+| `:reuse`         | Boolean                                   | Is this container reusable?                                                               |
 | `:env-vars`      | Map                                       | Value of the same input parameter                                                         |
 | `:host`          | String                                    | The host for the Docker Container                                                         |
 | `:id`            | String                                    | The ID of the started docker container                                                    |

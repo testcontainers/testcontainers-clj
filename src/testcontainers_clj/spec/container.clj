@@ -14,6 +14,9 @@
 (s/def ::exposed-ports
   (s/coll-of (s/int-in 1 65535)))
 
+(s/def ::reuse
+  boolean?)
+
 (s/def ::env-vars
   (s/map-of string? string?))
 
