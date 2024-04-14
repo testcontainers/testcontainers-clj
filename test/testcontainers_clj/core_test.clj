@@ -1,6 +1,6 @@
-(ns clj-test-containers.core-test
+(ns testcontainers-clj.core-test
   (:require
-   [clj-test-containers.core :as sut]
+   [testcontainers-clj.core :as sut]
    [clojure.string :refer [includes?]]
    [clojure.test :refer [deftest is testing]])
   (:import

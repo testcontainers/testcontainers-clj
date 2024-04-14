@@ -1,4 +1,4 @@
-# clj-test-containers
+# testcontainers-clj
 
 [![Clojars Project](http://clojars.org/clj-test-containers/latest-version.svg)](http://clojars.org/clj-test-containers)
 
@@ -11,17 +11,13 @@ This library is a lightweight wrapper around the [Testcontainers Java library](h
 This library does not provide tools to include testcontainers in your testing lifecycle. As there are many different
 test tools with different approaches to testing in the clojure world, handling the lifecycle is up to you.
 
-## Integration with test runners
-
-There is an [experimental kaocha plugin](https://github.com/lambdaschmiede/kaocha-testcontainers-plugin) you can try out
-
 ## Usage
 
 The library provides a set of functions to interact with the testcontainers. A simple example, how to create a container
 with a Docker label, could look like this:
 
 ```clojure
-(require '[clj-test-containers.core :as tc])
+(require '[testcontainers-clj.core :as tc])
 
 (def container (-> (tc/create {:image-name    "postgres:12.1"
                                :exposed-ports [5432]
@@ -41,7 +37,7 @@ If you'd rather create a container from a Dockerfile in your project, it could l
 
 ```clojure
 
-(require '[clj-test-containers.core :as tc])
+(require '[testcontainers-clj.core :as tc])
 
 (def container (-> (tc/create-from-docker-file {:env-vars      {"FOO" "bar"}
                                                 :exposed-ports [80]
@@ -52,7 +48,7 @@ If you'd rather create a container from a Dockerfile in your project, it could l
 If you prefer to use prebuilt containers from the Testcontainers project, you can do it like this
 
 ```clojure
-(require '[clj-test-containers.core :as tc])
+(require '[testcontainers-clj.core :as tc])
 (:import [org.testcontainers.containers PostgreSQLContainer])
 
 (def container (-> (tc/init {:container     (PostgreSQLContainer. "postgres:12.2")

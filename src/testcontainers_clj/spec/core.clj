@@ -1,7 +1,7 @@
-(ns clj-test-containers.spec.core
+(ns testcontainers-clj.spec.core
   (:require
-   [clj-test-containers.spec.container :as csc]
-   [clj-test-containers.spec.network :as csn]
+   [testcontainers-clj.spec.container :as csc]
+   [testcontainers-clj.spec.network :as csn]
    [clojure.spec.alpha :as s]))
 
 (s/def ::wait-for

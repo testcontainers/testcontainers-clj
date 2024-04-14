@@ -1,6 +1,6 @@
-(ns clj-test-containers.core
+(ns testcontainers-clj.core
   (:require
-    [clj-test-containers.spec.core :as cs]
+    [testcontainers-clj.spec.core :as cs]
     [clojure.spec.alpha :as s]
     [clojure.string])
   (:import
