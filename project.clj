@@ -1,4 +1,4 @@
-(defproject testcontainers-clj "unspecified"
+(defproject org.testcontainers/testcontainers-clj "unspecified"
   :description "A lightweight, official wrapper around the Testcontainers Java library"
 
   :url "https://github.com/testcontainers/testcontainers-clj"
