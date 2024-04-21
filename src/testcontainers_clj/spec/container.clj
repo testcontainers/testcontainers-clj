@@ -1,4 +1,4 @@
-(ns clj-test-containers.spec.container
+(ns testcontainers-clj.spec.container
   (:require
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as gen])
@@ -13,6 +13,9 @@
 
 (s/def ::exposed-ports
   (s/coll-of (s/int-in 1 65535)))
+
+(s/def ::reuse
+  boolean?)
 
 (s/def ::env-vars
   (s/map-of string? string?))

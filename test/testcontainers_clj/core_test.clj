@@ -1,6 +1,6 @@
-(ns clj-test-containers.core-test
+(ns testcontainers-clj.core-test
   (:require
-   [clj-test-containers.core :as sut]
+   [testcontainers-clj.core :as sut]
    [clojure.string :refer [includes?]]
    [clojure.test :refer [deftest is testing]])
   (:import
@@ -115,7 +115,19 @@
           result (sut/execute-command! initialized-container ["whoami"])
           _stopped-container (sut/stop! container)]
       (is (= 0 (:exit-code result)))
-      (is (= "root\n" (:stdout result))))))
+      (is (= "root\n" (:stdout result)))))
+
+  (testing "Reusing a container with the :reuse flag"
+    (let [container-1 (sut/init {:container (PostgreSQLContainer. "postgres:15.3")
+                               :exposed-ports [5432]
+                               :reuse true})
+          container-2 (sut/init {:container (PostgreSQLContainer. "postgres:15.3")
+                               :exposed-ports [5432]
+                               :reuse true})
+          initialized-container-1 (sut/start! container-1)
+          initialized-container-2 (sut/start! container-2)]
+      (is (= (.getContainerId (:container initialized-container-1))
+             (.getContainerId (:container initialized-container-2)))))))
 
 (deftest execute-command-in-container
 

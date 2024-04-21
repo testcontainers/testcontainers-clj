@@ -15,7 +15,7 @@ The functions accept and return a map structure, which enables us to operate the
 consistent way. The example shown with Java Interop above would look like this, when using the wrapped functions:
 
 ```clojure
-(require '[clj-test-containers.core :as tc])
+(require '[testcontainers-clj.core :as tc])
 
 (deftest db-integration-test
          (testing "A simple PostgreSQL integration test"

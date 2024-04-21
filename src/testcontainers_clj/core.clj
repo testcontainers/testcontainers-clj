@@ -1,6 +1,6 @@
-(ns clj-test-containers.core
+(ns testcontainers-clj.core
   (:require
-    [clj-test-containers.spec.core :as cs]
+    [testcontainers-clj.spec.core :as cs]
     [clojure.spec.alpha :as s]
     [clojure.string])
   (:import
@@ -183,6 +183,7 @@
   "Sets the properties for a testcontainer instance"
   [{:keys [^GenericContainer container
            exposed-ports
+           reuse
            env-vars
            command
            network
@@ -193,6 +194,9 @@
 
   (doseq [[k v] env-vars]
     (.addEnv container k v))
+
+  (when reuse
+    (.withReuse container true))
 
   (when command
     (.setCommand container ^"[Ljava.lang.String;" (into-array String command)))
@@ -425,5 +429,6 @@
 
 ;; REPL Helpers
 (comment
-  (start! (create {:image-name "postgres:12.1"}))
-  (perform-cleanup!))
+  (start! (create {:image-name "postgres:12.1" :reuse true}))
+  (perform-cleanup!)
+  )

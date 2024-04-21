@@ -1,4 +1,4 @@
-(ns clj-test-containers.spec.network
+(ns testcontainers-clj.spec.network
   (:require
    [clojure.spec.alpha :as s])
   (:import

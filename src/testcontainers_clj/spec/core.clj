@@ -1,7 +1,7 @@
-(ns clj-test-containers.spec.core
+(ns testcontainers-clj.spec.core
   (:require
-   [clj-test-containers.spec.container :as csc]
-   [clj-test-containers.spec.network :as csn]
+   [testcontainers-clj.spec.container :as csc]
+   [testcontainers-clj.spec.network :as csn]
    [clojure.spec.alpha :as s]))
 
 (s/def ::wait-for
@@ -25,13 +25,15 @@
                    ::csc/exposed-ports
                    ::csc/env-vars
                    ::csc/host]
-          :opt-un [::network
+          :opt-un [::csc/reuse
+                   ::network
                    ::wait-for
                    ::log-to]))
 
 (s/def ::init-options
   (s/keys :req-un [::csc/container]
           :opt-un [::csc/exposed-ports
+                   ::csc/reuse
                    ::csc/env-vars
                    ::csc/command
                    ::network
