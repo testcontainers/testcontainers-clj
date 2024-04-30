@@ -18,7 +18,7 @@
                                        lambdaisland/kaocha-cloverage {:mvn/version "1.1.89"}
                                        lambdaisland/kaocha-junit-xml {:mvn/version "1.17.101"}
                                        org.clojure/test.check        {:mvn/version "1.1.1"}
-                                       orchestra                     {:mvn/version "2021.01.01-1"}
+                                       orchestra/orchestra           {:mvn/version "2021.01.01-1"}
                                        org.testcontainers/postgresql {:mvn/version "1.19.7"}}
                          :main-opts   ["-m" "kaocha.runner" "--reporter" "kaocha.report/documentation"]}
 
