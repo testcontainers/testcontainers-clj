@@ -386,9 +386,11 @@
        (.driver builder driver))
 
      (let [network (.build builder)
-           network-name (.getName network)]
-       (swap! started-instances conj {:type :network :id :network-name})
-       {:network network
+           network-name (.getName network)
+           network-id (.getId network)]
+       (swap! started-instances conj {:type :network :id network-id})
+       {:id network-id
+        :network network
         :name    network-name
         :ipv6    (.getEnableIpv6 network)
         :driver  (.getDriver network)}))))
