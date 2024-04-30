@@ -30,6 +30,8 @@
      BindMode/READ_WRITE
      BindMode/READ_ONLY)))
 
+(def ^:dynamic *network* nil)
+
 (defonce started-instances (atom #{}))
 
 (defmulti wait
@@ -401,6 +403,16 @@
       (.removeNetworkCmd (:id instance))
       (.exec))
   instance)
+
+(defn with-network
+  ([] (with-network {}))
+  ([network-options]
+   (fn [test-fn]
+     (binding [*network* (create-network network-options)]
+       (try
+         (test-fn)
+         (finally
+           (remove-network! *network*)))))))
 
 (defn- stop-and-remove-container! [instance]
   (let [docker-client (DockerClientFactory/instance)]
