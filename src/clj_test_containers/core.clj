@@ -198,7 +198,9 @@
     (.setCommand container ^"[Ljava.lang.String;" (into-array String command)))
 
   (when network
-    (.setNetwork container (:network network)))
+    (if (= :host network)
+      (.withNetworkMode container "host")
+      (.setNetwork container (:network network))))
 
   (when network-aliases
     (.setNetworkAliases container network-aliases))
