@@ -421,6 +421,25 @@ Creates a network. The optional map accepts config values for enabling ipv6 and 
 (create-network)
 ```
 
+### with-network
+
+Create and bind a network to *network* and run `test-fn`. The network is removed after the function executes.
+
+#### Config parameters:
+
+`with-network` takes an optional map of options, equivalent to `create-network`.
+
+
+#### Example:
+
+```clojure
+;; Run tests within an ephemeral network
+(use-fixtures :once (tc/with-network {:ipv6? true}))
+
+(deftest test-network-loaded
+  (is (some? tc/*network*)))
+```
+
 ### perform-cleanup!
 
 Stops and removes all containers which were created in the JVM, including the REPL session you are in. This is helpful,
